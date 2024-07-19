@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Outgoing mail servers -->
+<!--        <record forcecreate="True" id="info_outgng_mail" model="ir.mail_server">-->
+<!--            <field name="name">InfoGsuite</field>-->
+<!--            <field name="smtp_host">smtp-relay.gmail.com</field>-->
+<!--            <field name="smtp_port">465</field>-->
+<!--            <field name="smtp_encryption">ssl</field>-->
+<!--            <field name="smtp_user">info@builderbay.com</field>-->
+<!--        </record>-->
+
+<!--        <record forcecreate="True" id="enq_outgng_mail" model="ir.mail_server">-->
+<!--            <field name="name">EnquiryGsuite</field>-->
+<!--            <field name="smtp_host">smtp-relay.gmail.com</field>-->
+<!--            <field name="smtp_port">465</field>-->
+<!--            <field name="smtp_encryption">ssl</field>-->
+<!--            <field name="smtp_user">enquiry@builderbay.com</field>-->
+<!--        </record>-->
+
+        <!-- SMS Templates  -->
+        <record forcecreate="True" id="bs_login_otp" model="bs.sms.template">
+            <field name="name">Login OTP</field>
+            <field name="company_id">1</field>
+        </record>
+
+        <record forcecreate="True" id="bs_signup_otp" model="bs.sms.template">
+            <field name="name">Signup OTP</field>
+            <field name="company_id">1</field>
+        </record>
+
+        <record forcecreate="True" id="bs_reset_pass_otp" model="bs.sms.template">
+            <field name="name">Reset Password OTP</field>
+            <field name="company_id">1</field>
+        </record>
+
+
+
+        <!-- res.partner tags -->
+        <record forcecreate="True" id="builder_id" model="res.partner.category">
+            <field name="name">Builder</field>
+        </record>
+        <record forcecreate="True" id="rmc_id" model="res.partner.category">
+            <field name="name">RMC</field>
+        </record>
+        <record forcecreate="True" id="manufacturer_id" model="res.partner.category">
+            <field name="name">Manufacturer</field>
+        </record>
+        <record forcecreate="True" id="dealer_id" model="res.partner.category">
+            <field name="name">Dealer</field>
+        </record>
+        <record forcecreate="True" id="others_id" model="res.partner.category">
+            <field name="name">Others</field>
+        </record>
+
+
+        <!-- Demo Vendor for raising PO -->
+         <record forcecreate="True" id="bs_demo_vendor" model="res.partner">
+            <field name="name">Demo Vendor</field>
+            <field name="company_id">1</field>
+            <field name="supplier_rank">100</field>
+        </record>
+
+
+        <record id="base.paperformat_euro" model="report.paperformat">
+            <field name="name">A4</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">35</field>
+            <field name="margin_bottom">15</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">30</field>
+            <field name="dpi">90</field>
+        </record>
+    </data>
+</odoo>

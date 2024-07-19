@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="purchase.action_report_purchase_order" model="ir.actions.report">
+        <field name="name">Purchase Order</field>
+        <field name="model">purchase.order</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">purchase.report_purchaseorder</field>
+        <field name="report_file">purchase.report_purchaseorder</field>
+        <field name="print_report_name">
+            (object.state in ('draft', 'sent') and '%s - Request for Quotation' % (object.name) or
+            '%s - Purchase Order' % (object.name))</field>
+        <field name="binding_model_id" ref="model_purchase_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="purchase.report_purchase_quotation" model="ir.actions.report">
+        <field name="name">Request for Quotation</field>
+        <field name="model">purchase.order</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">purchase.report_purchasequotation</field>
+        <field name="report_file">purchase.report_purchasequotation</field>
+        <field name="print_report_name">'Request for Quotation - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_purchase_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="purchase_stock.report_purchaseorder_document" inherit_id="purchase.report_purchaseorder_document"/>
+    <template id="purchase_stock.report_purchasequotation_document" inherit_id="purchase.report_purchasequotation_document"/>
+    <template id="l10n_in_purchase.gst_report_purchaseorder_document_inherit" inherit_id="purchase.report_purchaseorder_document"/>
+    <template id="l10n_in_purchase.gst_report_purchasequotation_document_inherit" inherit_id="purchase.report_purchasequotation_document"/>
+
+    <template id="bs_po_report">
+        <t t-call="builderbay.bs_external_layout">
+            <t t-set="report_model" t-value="'Purchase Order\n%s'%((str(o.name)) if (o.name and o.name != '/') else '')"/>
+            <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)"/>
+
+            <table style="font-size:12px;width:100%;">
+                <tr>
+                    <td style="width:35%;vertical-align: top;padding-right:5px;">
+                        <b>Details of Supplier : </b><br/>
+                        <t style="font-size:13px;" t-esc="o.partner_id.name"/><br/>
+                        <t t-if="o.partner_id.bs_acct_no">
+                            Customer Code: <t t-esc="o.partner_id.bs_acct_no"/><br/>
+                        </t>
+                        <address t-field="o.partner_id"
+                             t-options='{"widget": "contact", "fields": ["address","state","phone","vat"], "no_marker": True}' />
+                    </td>
+                    <td style="width:35%;vertical-align: top;padding-right:5px;">
+                        <b>Delivery Address : </b><br/>
+                        <span t-field="o.delivery_address"/>
+                        <br/>
+                        <i>Note: eWay bill has to be raised on this address, any GST compliances charges has to be borne by supplier</i>
+                    </td>
+                    <td style="width:30%;vertical-align: top;">
+                        <table>
+                             <tr>
+                                <th>Purchase Order No.:</th>
+                                <td><span t-if="o.name" t-field="o.name"/></td>
+                            </tr>
+                            <tr>
+                                <th>Ordered Date:</th>
+                                <td>
+                                    <span t-if="o.date_order" t-esc="o.date_order.strftime('%d %B, %Y')"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>To Deliver On:</th>
+                                <td><span t-if="o.date_planned" t-esc="o.date_planned.strftime('%d %B, %Y')"/></td>
+                            </tr>
+                            <tr>
+                                <th>SO number:</th>
+                                <td><span t-if="o.origin" t-field="o.origin"/></td>
+                            </tr>
+                            <t t-if="o.user_id">
+                                <tr>
+                                    <th>Purchase Manager: </th>
+                                    <td><t t-esc="o.user_id.name"/></td>
+                                </tr>
+                            </t>
+                            <tr>
+                                <th>Contact Person: </th>
+                                <td><t t-esc="o.dest_address_id.name"/></td>
+                            </tr>
+                            <tr>
+                                <th>Contact Number: </th>
+                                <td><t t-esc="o.dest_address_id.mobile or o.dest_address_id.phone"/></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <div class="page" style="font-size:12px !important;">
+                <table class="table table-bordered o_main_table mt-3" name="invoice_line_table"
+                       style="font-size:13px !important;">
+                    <thead>
+                        <tr>
+                            <th class="text-left" style="padding:5px;"><span>S/n</span></th>
+                            <th class="text-left" style="padding:5px;"><span>Description</span></th>
+                            <th class="text-left" style="padding:5px;font-size:12px;">
+                                HSN
+                            </th>
+                            <th class="text-right" style="padding:5px;"><span>Quantity</span></th>
+                            <th class="text-right" style="padding:5px;">
+                                <span>Unit Price</span>
+                            </th>
+                            <th class="text-right" style="padding:5px;">
+                                <span>Sub Total</span>
+                            </th>
+                            <th class="text-right" style="padding:3px;"><span>Taxes</span></th>
+                            <th class="text-right" style="padding:5px;"><span>Tax Amount</span></th>
+                            <th class="text-right" style="padding:5px;">
+                                <span>Total Amount</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="invoice_tbody">
+                        <t t-set="current_subtotal" t-value="0"/>
+                        <t t-set="lines" t-value="o.order_line.sorted(key=lambda l: (-l.sequence, -l.id), reverse=True)"/>
+                        <t t-set="sl_no" t-value="0"/>
+                        <t t-foreach="lines" t-as="line">
+                            <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal"
+                               groups="account.group_show_line_subtotals_tax_excluded"/>
+                            <t t-set="current_subtotal" t-value="current_subtotal + line.price_total"
+                               groups="account.group_show_line_subtotals_tax_included"/>
+
+                            <tr t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'font-italic o_line_note' if line.display_type == 'line_note' else ''">
+                                <t t-if="not line.display_type" name="account_invoice_line_accountable">
+                                    <t t-set="sl_no" t-value="sl_no+1"/>
+                                    <td style="padding:0px;text-align:center;padding-top:5px;"><t t-esc="sl_no"/></td>
+                                    <td name="account_invoice_line_name" style="padding:5px;">
+                                        <span t-field="line.name" t-options="{'widget': 'text'}"/>
+                                    </td>
+                                    <td class="text-left" style="padding:5px;font-size:12px;">
+                                         <span t-if="line.product_id.l10n_in_hsn_code" t-field="line.product_id.l10n_in_hsn_code"/>
+                                         <span t-else="" t-field="line.product_id.product_tmpl_id.l10n_in_hsn_code"/>
+                                    </td>
+                                    <td class="text-right" style="padding:5px;">
+                                        <span t-field="line.product_qty"/><br/>
+                                        <span t-field="line.product_uom"  groups="uom.group_uom"/>
+                                    </td>
+                                    <td class="text-right" style="padding:5px;">
+                                        <span class="text-nowrap" t-field="line.price_unit"
+                                        t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                    <td class="text-right" style="padding:5px;">
+                                        <span class="text-nowrap" t-field="line.price_subtotal"/>
+                                    </td>
+                                    <td class="text-right" style="padding:3px;">
+                                        <span t-esc="', '.join(map(lambda x: (x.description or x.name), line.taxes_id))" id="line_tax_ids"/>
+                                    </td>
+                                    <td class="text-right o_price_total" style="padding:5px;">
+                                        <t class="text-nowrap" t-esc="line.price_total - line.price_subtotal"
+                                         t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                    <td class="text-right o_price_total" style="padding:5px;">
+                                        <span class="text-nowrap" t-field="line.price_total"/>
+                                    </td>
+                                </t>
+                                <t t-if="line.display_type == 'line_section'">
+                                    <td colspan="99">
+                                        <span t-field="line.name" t-options="{'widget': 'text'}"/>
+                                    </td>
+                                    <t t-set="current_section" t-value="line"/>
+                                    <t t-set="current_subtotal" t-value="0"/>
+                                </t>
+                                <t t-if="line.display_type == 'line_note'">
+                                    <td colspan="99">
+                                        <span t-field="line.name" t-options="{'widget': 'text'}"/>
+                                    </td>
+                                </t>
+                            </tr>
+                            <t t-if="current_section and (line_last or lines[line_index+1].display_type == 'line_section')">
+                                <tr class="is-subtotal text-right">
+                                    <td colspan="99">
+                                        <strong class="mr16">Subtotal</strong>
+                                        <span t-esc="current_subtotal"
+                                            t-options='{"widget": "monetary", "display_currency": o.currency_id}'
+                                        />
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                    </tbody>
+                    <tfoot class="text-right" >
+                        <tr >
+                            <td/>
+                            <td style="padding:5px !important;" colspan="2">Total</td>
+                            <td style="padding:5px !important;">
+                                <t t-esc="'%.3f'%(sum([float(i.product_qty) for i in o.order_line]))"/>
+                            </td>
+                            <td style="padding:5px !important;">
+                                <t t-esc="sum([float(i.price_unit) for i in o.order_line])"
+                                 t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </td>
+                            <td style="padding:5px !important;">
+                                <t t-esc="sum([float(i.price_subtotal) for i in o.order_line])"
+                                 t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </td>
+                            <td/>
+                            <td style="padding:5px !important;">
+                                <t t-esc="sum([float(i.price_total - i.price_subtotal) for i in o.order_line])"
+                                t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </td>
+                            <td style="padding:5px !important;">
+                                <t t-esc="sum([float(i.price_total) for i in o.order_line])"
+                                   t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="clearfix">
+                    <div id="total" class="row" style="padding-right: 15px;">
+                        <div class="col-7 text-left" style="font-size:11px !important;">
+                            <strong style="position: absolute;text-align: left !important;bottom: 19px;">Rupees in words:
+                                <t t-esc="o.get_num2words(o.amount_total)"/>
+<!--                                <span style="margin-left:0.5em;" t-field="o.amount_total_words" />-->
+                            </strong>
+                        </div>
+                        <div class="col-5">
+                            <table class="table table-sm" style="page-break-inside: avoid;">
+                                <tr class="border-light o_subtotal" style="">
+                                    <td><strong>Taxable Amount</strong></td>
+                                    <td class="text-right">
+                                        <span t-field="o.amount_untaxed"/>
+                                    </td>
+                                </tr>
+                                <tr class="border-light o_subtotal" style="">
+                                    <td><strong>Taxes</strong></td>
+                                    <td class="text-right">
+                                        <span t-field="o.amount_tax"/>
+                                    </td>
+                                </tr>
+                                <tr class="border-light o_total">
+                                    <td><strong>Total Invoice Amount</strong></td>
+                                    <td class="text-right">
+                                        <span class="text-nowrap" t-field="o.amount_total"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin:0px;">
+                    <div style="width:100%;">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <ul class="list-unstyled">
+                                                <table class="table table-bordered bs-report-bank-details" >
+                                                    <thead>
+                                                        <tr>
+                                                            <t t-if="o.partner_id.bs_acct_no">
+                                                                <th colspan="2" style="padding: 5px;">
+                                                                    <strong>Bank Details </strong>
+                                                                </th>
+                                                            </t>
+                                                            <th style="padding: 5px;"><strong class="text-left">Terms <![CDATA[&]]> Conditions </strong></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                      <tr>
+                                                          <t t-if="o.partner_id.bs_acct_no">
+                                                            <td style="padding:5px;width:15%;">
+                                                                Beneficiary Name
+                                                            </td>
+                                                            <td style="padding:5px;">
+                                                                builderbay India Private Limited<!--<t t-esc="o.partner_id.name"/>-->
+                                                            </td>
+                                                          </t>
+                                                        <td rowspan="5" style="width:55%;text-align: justify;">
+                                                            <t t-set="counter" t-value="1"/>
+                                                            <t t-foreach="o.t_and_c" t-as="tc">
+                                                                <t t-if="tc.is_selected">
+                                                                    <t t-esc="counter"/>. <t t-esc="tc.tandc_id.name"/><br/>
+                                                                    <t t-set="counter" t-value="counter+1"/>
+                                                                </t>
+                                                            </t>
+                                                        </td>
+                                                      </tr>
+                                                      <tr>
+                                                          <t t-if="o.partner_id.bs_acct_no">
+                                                            <td style="padding:5px;">
+                                                                Bank Account No
+                                                            </td>
+                                                            <td class="boldTag" style="font-weight:bold;padding:5px;font-size:14px;">
+                                                                <t t-esc="o.partner_id.bs_acct_no"/>
+                                                            </td>
+                                                          </t>
+                                                      </tr>
+                                                      <tr>
+                                                          <t t-if="o.partner_id.bs_acct_no">
+                                                            <td style="padding:5px;">
+                                                                IFSC CODE
+                                                            </td>
+                                                            <td class="boldTag" style="font-weight:bold;padding:5px;font-size:15px;">
+                                                                <div class="pull-left">
+                                                                    UTIB
+                                                                </div>
+                                                                <div class="pull-left zero-number" style="position: relative;">
+                                                                    0
+                                                                    <img src="/builderbay/static/src/images/DownArrow3.png"
+                                                                         style="position: absolute;height: 14px;top: 18px;left: -2px;"/>
+                                                                </div>
+                                                                <div class="pull-left">
+                                                                    CCH274
+                                                                </div>
+                                                                <div style="clear: both;"/>
+                                                                <div style="margin-top: 10px;">"0" - Number</div>
+                                                            </td>
+                                                          </t>
+                                                      </tr>
+                                                      <tr>
+                                                          <t t-if="o.partner_id.bs_acct_no">
+                                                            <td style="padding:5px;">
+                                                                Bank
+                                                            </td>
+                                                            <td style="padding:5px;">
+                                                                <t t-esc="o.partner_id.bs_acct_bank_id.name"/>
+                                                            </td>
+                                                          </t>
+                                                      </tr>
+                                                      <tr>
+                                                          <t t-if="o.partner_id.bs_acct_no">
+                                                            <td colspan="2" style="padding:5px;">
+                                                            1. Please note, even for Axis Bank customers this bank account should be added as other beneficiary only.<br/>2. This Bank details belongs to the <t t-esc="o.partner_id.name"/> and not for others.
+                                                            </td>
+                                                          </t>
+                                                      </tr>
+                                                    </tbody>
+                                                  </table>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                </div>
+                <div class="row" style="font-size:11px;margin-top:10px;text-align:right;">
+                    <div class="col-4">
+                        <ul class="list-unstyled">
+                            <li><strong> Materials Received </strong></li>
+                        </ul>
+                        <ul class="list-unstyled" style="margin-top:30px;">
+                            <li>Authorised Signatory </li>
+                        </ul>
+                    </div>
+                    <div class="col-8">
+                        <ul class="list-unstyled">
+                            <li><strong> Certified that the particulars given above are true and correct </strong></li>
+                        </ul>
+                        <ul class="list-unstyled" style="margin-top:30px;">
+                            <li>Authorised Signatory </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="purchase.report_purchasequotation_document">
+        <t t-call="builderbay.bs_po_report"/>
+    </template>
+
+    <template id="purchase.report_purchaseorder_document">
+        <t t-call="builderbay.bs_po_report"/>
+    </template>
+
+    <template id="purchase.report_purchaseorder">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="purchase.report_purchaseorder_document" t-lang="o.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+</odoo>

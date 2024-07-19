@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Overridden: changing default view to tree -->
+        <record id="contacts.action_contacts" model="ir.actions.act_window">
+            <field name="name">Contacts</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">tree,form,kanban,activity</field>
+            <field name="search_view_id" ref="base.view_res_partner_filter"/>
+            <field name="context">{'default_is_company': True}</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a contact in your address book
+              </p><p>
+                Odoo helps you to easily track all activities related to a customer.
+              </p>
+            </field>
+        </record>
+        <record id="contacts.action_contacts_view_kanban" model="ir.actions.act_window.view">
+            <field name="sequence" eval="10"/>
+            <field name="view_mode">kanban</field>
+            <field name="view_id" ref="base.res_partner_kanban_view"/>
+            <field name="act_window_id" ref="contacts.action_contacts"/>
+        </record>
+
+        <!--Inherited view -->
+        <record id="bs_res_partner_tree" model="ir.ui.view">
+            <field name="name">bs.res.partner.tree.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="arch" type="xml">
+                <field name="display_name" position="before">
+                    <field name="partner_code"/>
+                </field>
+                <field name="display_name" position="after">
+                    <field name="bs_acct_no"/>
+                </field>
+                 <field name="display_name" position="replace">
+                    <field name="name"/>
+                 </field>
+            </field>
+        </record>
+        <record id="res_partner_form" model="ir.ui.view">
+            <field name="name">res.partner.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="category_id" position="after">
+                    <field name="customer_type" attrs="{'required':[('parent_id','=',False)]}" string="Type"/>
+                </field>
+                <field name="name" position="before">
+                  <field name="partner_code" readonly="1" style="color:blue;"/>
+                </field>
+                <field name="type" position="after">
+                    <field name="legal_name" attrs="{'invisible':['|',('parent_id','!=',False),('company_type','!=','company')]}"/>
+                    <field name="site_name"/>
+                    <field name="site_location"/>
+                </field>
+				<xpath expr="//field[@name='city']" position="after">
+                    <field name="landmark" string="District" class="o_address_city"/>
+                    <field name="district_id" string="District" class="o_address_city"/>
+                </xpath>
+                <xpath expr="//field[@name='bank_ids']/tree" position="replace">
+                    <tree editable="bottom">
+                        <field name="sequence" widget="handle"/>
+                        <field name="bank_id"/>
+                        <field name="acc_number"/>
+                        <field name="ifsc_code"/>
+                        <field name="acc_holder_name" invisible="1"/>
+                    </tree>
+                    <form>
+                        <group>
+                            <group>
+                                <field name="bank_id"/>
+                                <field name="ifsc_code"/>
+                                <field name="acc_number"/>
+                                <field name="acc_holder_name"/>
+                            </group>
+                            <group>
+                                <field name="bank_attachment_id"/>
+                                <field name="bank_address"/>
+                            </group>
+                        </group>
+                    </form>
+                </xpath>
+                <xpath expr="//notebook/page[last()]" position="after">
+                    <page string="builderbay Bank Details"
+                          attrs="{'invisible':[('bs_acct_no','=',False)]}">
+                        <group>
+                            <field name="bs_acct_beneficiary_name"  readonly="1"/>
+                            <field name="bs_acct_no" readonly="1"/>
+                            <field name="bs_acct_bank_id" readonly="1"/>
+                            <field name="bs_acct_ifsc_code" readonly="1"/>
+                            <field name="bs_acct_address" readonly="1"/>
+                        </group>
+                    </page>
+                    <page string="Notifications">
+                        <group>
+                            <field name="to_notify_sms" />
+                            <field name="to_notify_email"/>
+                        </group>
+                    </page>
+                </xpath>
+                <xpath expr="//page[@name='contact_addresses']/field[@name='child_ids']/form/sheet/group/group/field" position="before">
+                    <field name="site_name"/>
+                    <field name="site_location"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bs_acct_details" model="ir.ui.view">
+            <field name="name">bs.partner.banks.tree</field>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <tree string="BS Bank Accounts" create="false" edit="false" delete="false">
+                    <field name="name"/>
+                    <field name="partner_code"/>
+                    <field name="bs_acct_beneficiary_name"/>
+                    <field name="bs_acct_no"/>
+                    <field name="bs_acct_bank_id"/>
+                    <field name="bs_acct_ifsc_code"/>
+                    <field name="bs_acct_address"/>
+                </tree>
+            </field>
+        </record>
+        <record id="bs_cust_bank_action" model="ir.actions.act_window">
+            <field name="name">BS Customer Banks</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="domain">[('customer_rank' ,'>', 0)]</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="bs_acct_details"/>
+        </record>
+        <record id="bs_vend_bank_action" model="ir.actions.act_window">
+            <field name="name">BS Vendor Banks</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="domain">[('supplier_rank' ,'>', 0)]</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="bs_acct_details"/>
+        </record>
+
+        <menuitem action="bs_cust_bank_action" id="bs_cust_banks_menu_id" parent="contacts.menu_config_bank_accounts" sequence="7"/>
+        <menuitem action="bs_vend_bank_action" id="bs_vend_banks_menu_id" parent="contacts.menu_config_bank_accounts" sequence="8"/>
+
+
+    </data>
+</odoo>

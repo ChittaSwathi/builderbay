@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="bs_reset_password" name="Reset Password">
+            <t t-call="web.login_layout">
+                <div class="main-section customerlogin">
+                    <div class="container">
+                        <div class="card mx-auto border-0">
+                            <div class="card-body pb-4">
+                                <div class="tab-content">
+                                    <form class="oe_reset_password_form" name="reset-password">
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <input type="text" name="resetName" class="form-control" id="resetName" placeholder="Enter your name" autocomplete="nope"/>
+                                            </div>
+                                            <p class="text-danger pad-mar-0 font-size-12" id="resetNameError"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <input type="text" name="resetEmailPhone" class="form-control" id="resetEmailPhone" placeholder="Enter mobile number/Email ID" autocomplete="nope"/>
+                                            </div>
+                                            <p class="text-danger pad-mar-0 font-size-12" id="resetEmailPhoneError"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <input type="password" name="resetPassword" class="form-control" id="resetPassword" placeholder="Enter password" autocomplete="nope"/>
+                                            </div>
+                                            <p class="text-danger pad-mar-0 font-size-12" id="resetPasswordError"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <input type="password" name="resetConfirmPassword" class="form-control" id="resetConfirmPassword" placeholder="Enter confirm password" autocomplete="nope"/>
+                                            </div>
+                                            <p class="text-danger pad-mar-0 font-size-12" id="resetConfirmPasswordError"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <input type="button" name="submit" value="Submit" class="form-control btn btn-lg btn-color" id="resetSubmit"/>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+    	<template id="user_navbar_inherit_bs" inherit_id="website.user_navbar">
+		    <xpath expr="//nav[@id='oe_main_menu_navbar']" position="before">
+		    	<t t-set="x" t-value="env['ir.ui.view'].check_user_group()"/>
+		    	<t t-if="x">
+	    			<style>
+		    			#oe_main_menu_navbar{display:block;}
+		    		</style>
+		    	</t>
+		    	<t t-else="">
+		    		<style>
+		    			#oe_main_menu_navbar{display:none;}
+		    		</style>
+		    		<!-- <attribute name="style">display:none</attribute> -->
+		    	</t>
+		    </xpath>
+		</template>
+
+        <template id="auth_signup.signup" name="Sign up login">
+            <t t-call="web.login_layout">
+                <div class="main-section customerlogin">
+                	<style>
+                		#wrapwrap{top:-46px !important;}
+                	</style>
+                    <div class="container">
+                        <div class="card mx-auto border-0">
+                            <div class="card-header border-bottom-0 bg-transparent">
+                                <ul class="nav nav-tabs justify-content-center pt-4" id="pills-tab" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active logintext font-size-16 font-family-bold" id="pills-login-tab" data-toggle="pill" href="#pills-login" role="tab" aria-controls="pills-login"
+                           aria-selected="true">Login</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link logintext font-size-16 font-family-bold" id="pills-register-tab" data-toggle="pill" href="#pills-register" role="tab" aria-controls="pills-register"
+                           aria-selected="false">Signup</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body pb-4">
+                                <div class="tab-content" id="pills-tabContent">
+                                    <div class="tab-pane fade show active" id="pills-login" role="tabpanel" aria-labelledby="pills-login-tab">
+                                        <form class="oe_login_form" role="form" t-attf-action="/web/login" method="post"
+                                              onsubmit="this.action = this.action + location.hash" style="margin-top:0px;">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" id="redirect" name="redirect" t-att-value="redirect"/>
+                                            <div class="loginEPMain">
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                    	<input type="text" name="otpLogin" value="1" style="display:none;"/>
+                                                        <input type="text" name="emailPhone" class="form-control" id="emailPhone" placeholder="Enter mobile number/Email ID" autocomplete="nope"/>
+                                                    </div>
+                                                    <p class="text-danger pad-mar-0 font-size-12" id="emailPhoneError"/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <input type="password" name="password" class="form-control"  id="password" placeholder="Password" autocomplete="nope"/>
+                                                    </div>
+                                                    <p class="text-danger pad-mar-0 font-size-12" id="passwordError"/>
+                                                </div>
+                                                <div class="text-center pb-4">
+                                                    <button type="button" class="form-control btn btn-lg btn-color" id="submitLoginWithEP">Login</button>
+                                                    <button type="button" class="form-control btn btn-lg btn-color loading-action" id="show-login-loading" style="display:none;" disabled="true">
+                                                      <i class="fa fa-spinner fa-spin loading-fa"></i>Login
+                                                    </button>
+                                                    <p class="text-danger pad-mar-0 font-size-12" id="error_login"/>
+                                                </div>
+                                            </div>
+                                            <div class="loginOTPMain">
+                                                <div class="otpForSignin">
+                                                    <div class="form-group">
+                                                        <input type="text" name="email" id="emailPhoneSignin" class="form-control" placeholder="Enter mobile number/Email ID"/>
+                                                        <button type="button" class="btn btn-color otpbutton" id="otpBtnSignin">
+                                                            <a class="btn-link getotp pointer">Get OTP</a>
+                                                        </button>
+                                                        <button type="button" class="btn btn-color otpbutton loading-action" id="show-login-getOTP" style="display:none;" disabled="true">
+                                                          <i class="fa fa-spinner fa-spin loading-fa"></i>Get OTP
+                                                        </button>
+                                                        <div class="alert alert-success success-msg-otp" role="alert" id="otp-msg-phone-e-signin" style="display:none;">
+                                                          OTP sent successfully - <span id="timer-phone-email-signin"></span>
+                                                        </div>
+                                                    </div>
+                                                    <p class="text-danger pad-mar-0 font-size-12" id="emailPhoneSigninError" style="display: none;"/>
+                                                </div>
+                                                <div class="confirmation_code split_input large_bottom_margin" data-multi-input-code="true" id="loginVarificationCode" style="display:none;">
+                                                    <div class="text-center pb-4">
+                                                        <span class="verifylabel text-center">Verification Code</span>
+                                                    </div>
+                                                    <div class="confirmation_code_group">
+                                                        <div class="split_input_item input_wrapper">
+                                                            <input type="text" name="first" class="inline_input checkSigninOtp" maxlength="1"  id="first" onkeyup="movetoNext(this, 'second', event, 'empty')"/>
+                                                        </div>
+                                                        <div class="split_input_item input_wrapper">
+                                                            <input type="text" name="second" class="inline_input checkSigninOtp" maxlength="1"  id="second" onkeyup="movetoNext(this, 'third', event, 'first')"/>
+                                                        </div>
+                                                        <div class="split_input_item input_wrapper">
+                                                            <input type="text" name="third" class="inline_input checkSigninOtp" maxlength="1" id="third" onkeyup="movetoNext(this, 'fourth', event, 'second')"/>
+                                                        </div>
+                                                        <div class="split_input_item input_wrapper">
+                                                            <input type="text" name="fourth" class="inline_input checkSigninOtp" maxlength="1" id="fourth" onkeyup="movetoNext(this, 'five', event, 'third')"/>
+                                                        </div>
+                                                        <div class="split_input_item input_wrapper">
+                                                            <input type="text" name="five" class="inline_input checkSigninOtp" maxlength="1"  id="five" onkeyup="movetoNext(this, 'six', event, 'fourth')"/>
+                                                        </div>
+                                                        <div class="split_input_item input_wrapper">
+                                                            <input type="text" name="six" class="inline_input checkSigninOtp" maxlength="1"  id="six" onkeyup="movetoNext(this, 'empty', event, 'five')"/>
+                                                        </div>
+                                                        <p class="text-danger pad-mar-0 font-size-12" id="LoginOTPError"/>
+                                                    </div>
+                                                    <div class="text-center pb-4" style="margin-top: 30px;">
+                                                        <button type="button" class=" form-control btn btn-lg btn-color" id="submitLoginWithOTP">Login</button>
+                                                        <button type="button" class="form-control btn btn-lg btn-color loading-action" id="show-login-otp" style="display:none;" disabled="true">
+                                                          <i class="fa fa-spinner fa-spin loading-fa"></i>Login
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="text-center pt-2">
+                                                <label class=" text-secondary">or</label>
+                                            </div>
+                                            <div class="text-center pt-2">
+                                                <a class=" btn-link otplink pointer loginEP font-size-16 font-family-bold">Login with OTP</a>
+                                                <a class=" btn-link otplink pointer loginOTP">Login with password</a>
+                                            </div>
+                                        </form>
+                                    	
+                                    </div>
+
+                                    <div class="tab-pane fade" id="pills-register" role="tabpanel" aria-labelledby="pills-register-tab">
+                                        <div class="otpForSignup">
+                                            <div class="form-group">
+                                                <input type="text" name="email" id="emailPhoneSignup" class="form-control" placeholder="Enter mobile number/Email ID"/>
+                                                <button type="button" class="btn btn-color otpbutton" id="otpBtnSignup">
+                                                    <a class="btn-link getotp pointer">Get OTP</a>
+                                                </button>
+                                                <button type="button" class="btn btn-color otpbutton loading-action" id="show-signup-otp" style="display:none;" disabled="true">
+                                                  <i class="fa fa-spinner fa-spin loading-fa"></i>Get OTP
+                                                </button>
+                                                <div class="alert alert-success success-msg-otp" role="alert" id="otp-msg-phone-e-s" style="display:none;">
+                                                  OTP sent successfully - <span id="timer-phone-email-signup"></span>
+                                                </div>
+                                            </div>
+                                            <p class="text-danger pad-mar-0 font-size-12" id="emailPhoneSignupError"/>
+                                        </div>
+                                        <div class="verificationCode">
+                                            <div class="text-center pb-4">
+                                                <span class="verifylabel text-center">Verification Code</span>
+                                            </div>
+                                            <div class="confirmation_code split_input large_bottom_margin">
+                                                <div class="confirmation_code_group">
+                                                    <div class="split_input_item input_wrapper">
+                                                        <input type="text" class="inline_input checkSignupOtp" maxlength="1" onkeyup="movetoNext(this, 'secondSignup', event, 'empty')" id="firstSignup"/>
+                                                    </div>
+                                                    <div class="split_input_item input_wrapper">
+                                                        <input type="text" class="inline_input checkSignupOtp" maxlength="1" onkeyup="movetoNext(this, 'thirdSignup', event, 'firstSignup')" id="secondSignup"/>
+                                                    </div>
+                                                    <div class="split_input_item input_wrapper">
+                                                        <input type="text" class="inline_input checkSignupOtp" maxlength="1" onkeyup="movetoNext(this, 'fourthSignup', event, 'secondSignup')" id="thirdSignup"/>
+                                                    </div>
+                                                    <div class="split_input_item input_wrapper">
+                                                        <input type="text" class="inline_input checkSignupOtp" maxlength="1" onkeyup="movetoNext(this, 'fiveSignup', event, 'thirdSignup')" id="fourthSignup"/>
+                                                    </div>
+                                                    <div class="split_input_item input_wrapper">
+                                                        <input type="text" class="inline_input checkSignupOtp" maxlength="1" onkeyup="movetoNext(this, 'sixSignup', event, 'fourthSignup')" id="fiveSignup"/>
+                                                    </div>
+                                                    <div class="split_input_item input_wrapper">
+                                                        <input type="text" class="inline_input checkSignupOtp" maxlength="1" onkeyup="movetoNext(this, 'empty', event, 'fiveSignup')" id="sixSignup"/>
+                                                    </div>
+                                                    <p class="text-danger pad-mar-0 font-size-12" id="SignupOTPError"/>
+                                                </div>
+                                            </div>
+                                            <div class="text-center pb-4" style="margin-top:30px;">
+                                                <button type="button" class="btn btn-m btn-color continuebtn" id="continuebtnNext" style="width:100%;">Continue</button>
+                                                <button type="button" class="btn btn-m btn-color continuebtn loading-action" id="show-continue-loading" style="display:none;width:100%;" disabled="true">
+                                                  <i class="fa fa-spinner fa-spin loading-fa"></i>Continue
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <form style="max-width:100% !important;margin-top:0px;display:none;" name="signupForm" class="oe_signup_form" role="form" t-attf-action="/web/signup" method="post"
+                                              onsubmit="this.action = this.action + location.hash" autocomplete="off">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <div class="row selectRole">
+                                                <div class="col-lg-6 text-right">
+                                                    <div class="form-group">
+                                                        <label class="pointer">
+                                                            <input name="b2c" type="checkbox" id="b2c" class="checklabel" checked="true"/>Individual Customer
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label class="pointer">
+                                                            <input name="b2b" type="checkbox" id="b2b" class="checklabel"/>Business Customer
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="b2c-signup-div" class="signupIndCustomer inputFonts">
+                                                <t t-call="builderbay.verification_fields"/>
+                                                <div id="b2b-signup-div"  class="signupBusCustomer inputFonts" style="display:none;">
+                                                    <t t-call="builderbay.b2b_address_fields"/>
+                                                    <t t-call="builderbay.b2b_checks"/>
+                                                </div>
+                                                <t t-call="builderbay.signup_fields"/>
+                                                <div id="b2c-signup-add">
+                                                    <t t-call="builderbay.generic_address_fields"/>
+                                                </div>
+                                            </div>
+
+                                            <p class="alert alert-danger" t-if="error" role="alert">
+                                                <t t-esc="error"/>
+                                            </p>
+                                            <input id="redirect" type="hidden" name="redirect" t-att-value="redirect"/>
+                                            <input id="token" type="hidden" name="token" t-att-value="token"/>
+                                            <span class="text-danger" id="signup-error-msg" style="display:none;"/>
+                                            <div class="text-center  pt-3">
+                                                <button id="SubmitBttn" type="button" class="btn btn-block btn-color"> Sign up</button>
+<!--                                                <button type="button" class="btn btn-block btn-color loading-action" id="show-signup-submit-loading" style="display:none;" disabled="true">-->
+<!--                                                  <i class="fa fa-spinner fa-spin loading-fa"></i>Sign up-->
+<!--                                                </button>-->
+                                                <div class="o_login_auth"/>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <template id="generic_address_fields">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="zip">Pincode</label>
+                        <div class="input-group">
+                            <input name="zip" type="text" class="form-control" id="zip" placeholder="PIN Code" maxlength="6" />
+                        </div>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_zip">Please enter your pincode.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="city">City</label>
+                        <div class="input-group">
+                            <input name="city" type="text" class="form-control" id="city"  placeholder="City"/>
+                        </div>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_city">Please enter your city name.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="district_id">District</label>
+                        <!--<input name="district_id" type="text" class="form-control" id="district_id"  placeholder="Select District"/>-->
+						<select name="district_id" class="form-control chosen" id="district_id">
+							<option value="0">Select District</option>
+							<t t-foreach="district_ids" t-as="d">
+								<option t-att-value="d.id" t-esc="d.name" />
+							</t>
+						</select>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_district_id">Please select district.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="state_id">State</label>
+                        <!--<input name="state_id" type="text" class="form-control" id="state_id"  placeholder="Select State"/>-->
+						<select name="state_id" class="form-control chosen" id="state_id">
+							<option value="0">Select State</option>
+							<t t-foreach="state_ids" t-as="s">
+								<option t-att-value="s.id" t-esc="s.name" />
+							</t>
+						</select>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_state_id">Please select state.</p>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template id="verification_fields">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="email">Enter your email</label>
+                        <div class="input-group">
+                        	<input name="otpLogin" type="text" value="0" style="display:none;"/>
+                            <input name="email" type="text"  id="email" class="form-control" />
+                        </div>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_email">Please enter your Email.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-color mar-top-30 btn-block" id="send_email_otp" >
+                        <a class="btn-link">Get OTP</a>
+                    </button>
+                    <button type="button" class="btn btn-color mar-top-30 btn-block loading-action" id="show-email-loading" style="display:none;margin-top:30px;" disabled="true">
+                      <i class="fa fa-spinner fa-spin loading-fa"/>Get OTP
+                    </button>
+                    <div class="alert alert-success success-msg-otp" role="alert" id="otp-msg-email" style="display:none;margin-top:40px;">
+                      OTP sent successfully - <span id="timer"/>
+                    </div>
+                    <div class="form-group" id="email-verified" style="display:none;">
+                        <label for="verification">
+                            <i class="fa fa-check-circle fa-1x mt-5 text-success font-size-16" aria-checked="true"/> &amp;nbspVerified
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="verify_signup_email_otp" style="display:none;">
+                <div  class="col-sm-6"  >
+                     <div id="email_otp">
+                        <div class="split_input_item input_wrapper">
+                           <input type="text" name="eotp1" maxlength="1" tabindex="1" class="SignupEmailOTP" id="eotp1" onkeyup="movetoNext(this, 'eotp2', event, 'empty')"/>
+                        </div>
+                        <div class="split_input_item input_wrapper">
+                            <input type="text" name="eotp2" maxlength="1" tabindex="2" class="SignupEmailOTP" id="eotp2" onkeyup="movetoNext(this, 'eotp3', event, 'eotp1')"/>
+                        </div>
+                        <div class="split_input_item input_wrapper">
+                            <input type="text" name="eotp3" maxlength="1" tabindex="3" class="SignupEmailOTP" id="eotp3" onkeyup="movetoNext(this, 'eotp4', event, 'eotp2')"/>
+                        </div>
+                        <div class="split_input_item input_wrapper">
+                            <input type="text" name="eotp4" maxlength="1" tabindex="4" class="SignupEmailOTP" id="eotp4" onkeyup="movetoNext(this, 'eotp5', event, 'eotp3')"/>
+                        </div>
+                        <div class="split_input_item input_wrapper">
+                            <input type="text" name="eotp5" tabindex="5" class="SignupEmailOTP" id="eotp5" onkeyup="movetoNext(this, 'eotp6', event, 'eotp4')"/>
+                        </div>
+                        <div class="split_input_item input_wrapper">
+                             <input type="text" name="eotp6" maxlength="1" tabindex="6" class="SignupEmailOTP" id="eotp6" onkeyup="movetoNext(this, 'empty', event, 'eotp5')"/>
+                        </div>
+                    </div>
+                    <p class="text-danger pad-mar-0 font-size-12" id="email_otp_failed"/>
+                </div>
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-color mar-top-10 btn-block" id="verify_email_otp">
+                        <a class="btn-link">Verify</a>
+                    </button>
+                    <button type="button" class="btn btn-color mar-top-10 btn-block loading-action" id="verify_email_loading" style="display:none;margin-top:10px;" disabled="true">
+                      <i class="fa fa-spinner fa-spin loading-fa"/>Verify
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="mobile">Enter your Mobile number</label>
+                        <div class="input-group">
+                            <input name="mobile" type="text"  id="mobile" class="form-control" maxlength="10"/>
+                        </div>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_mobile">Please enter your mobile number.</p>
+                    </div>
+                </div>
+                 <div class="col-sm-6">
+                    <button type="button" class="btn btn-color mar-top-30 btn-block" id="send_mobile_otp">
+                        <a class="btn-link">Get OTP</a>
+                    </button>
+                     <button type="button" class="btn btn-color mar-top-30 btn-block loading-action" id="show-phone-loading" style="display:none;margin-top:30px;" disabled="true">
+                      <i class="fa fa-spinner fa-spin loading-fa"/>Get OTP
+                    </button>
+                     <div class="alert alert-success success-msg-otp" role="alert" id="otp-msg-phone" style="display:none;margin-top:40px;">
+                      OTP sent successfully - <span id="timer-phone"/>
+                    </div>
+                     <div class="form-group" id="mobile-verified" style="display:none;">
+                        <label for="verification">
+                            <i class="fa fa-check-circle fa-1x mt-5 text-success font-size-16" aria-checked="true"/> &amp;nbspVerified
+                        </label>
+                    </div>
+                 </div>
+            </div>
+            <div class="row" id="verify_signup_mobile_otp" style="display:none;">
+                <div class="col-sm-6">
+                    <div id="mobile_otp">
+                        <div class="split_input_item input_wrapper">
+                           <input type="text" name="motp1" maxlength="1" tabindex="1" class="SignupMobileOTP" id="motp1" onkeyup="movetoNext(this, 'motp2', event, 'empty')"/>
+                        </div>
+                        <div class="split_input_item input_wrapper">
+                            <input type="text" name="motp2" maxlength="1" tabindex="2" class="SignupMobileOTP" id="motp2" onkeyup="movetoNext(this, 'motp3', event, 'motp1')"/>
+                        </div>
+                        <div class="split_input_item input_wrapper">
+                            <input type="text" name="motp3" maxlength="1" tabindex="3" class="SignupMobileOTP" id="motp3" onkeyup="movetoNext(this, 'motp4', event, 'motp2')"/>
+                        </div>
+                        <div class="split_input_item input_wrapper">
+                            <input type="text" name="motp4" maxlength="1" tabindex="4" class="SignupMobileOTP" id="motp4" onkeyup="movetoNext(this, 'motp5', event, 'motp3')"/>
+                        </div>
+                        <div class="split_input_item input_wrapper">
+                            <input type="text" name="motp5" maxlength="1" tabindex="5" class="SignupMobileOTP" id="motp5" onkeyup="movetoNext(this, 'motp6', event, 'motp4')"/>
+                        </div>
+                        <div class="split_input_item input_wrapper">
+                             <input type="text" name="motp6" maxlength="1" tabindex="6" class="SignupMobileOTP" id="motp6" onkeyup="movetoNext(this, 'empty', event, 'motp5')"/>
+                        </div>
+                    </div>
+                    <p class="text-danger pad-mar-0 font-size-12" id="mobile_otp_failed"/>
+                </div>
+                <div class="col-sm-6">
+
+                    <button type="button" class="btn btn-color mar-top-10 btn-block" id="verify_mobile_otp">
+                        <a class="btn-link">Verify</a>
+                    </button>
+                    <button type="button" class="btn btn-color mar-top-10 btn-block loading-action" id="verify_mobile_loading" style="display:none;margin-top:10px;" disabled="true">
+                      <i class="fa fa-spinner fa-spin loading-fa"/>Verify
+                    </button>
+                </div>
+            </div>
+        </template>
+
+        <template id="b2b_address_fields">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="GSTIN">GSTIN</label>
+                        <div class="input-group">
+                            <input name="gstin" type="text" class="form-control" id="gstin" placeholder="Enter GSTIN"/>
+                        </div>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_gstin">Please enter GSTIN.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="pan">PAN</label>
+                        <div class="input-group">
+                            <input name="pan" type="text" class="form-control" id="pan" placeholder="Enter PAN number"/>
+                        </div>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_pan">Please enter PAN.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="shop_name">Company/Trade Name</label>
+                        <div class="input-group">
+                            <input name="shop_name" type="text" class="form-control" id="shop_name" placeholder="Company/Trade Name"/>
+                        </div>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_shop_name">Please enter your company name.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="legal_name">Legal Name</label>
+                        <div class="input-group">
+                            <input name="legal_name" type="text" class="form-control" id="legal_name"  placeholder="Legal Name"/>
+                        </div>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_legal_name">Please enter your legal name.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="gst_zip">Pincode</label>
+                        <div class="input-group">
+                            <input name="gst_zip" type="text" class="form-control" id="gst_zip" placeholder="PIN Code" maxlength="6" />
+                        </div>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_gst_zip">Please enter your pincode.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="gst_city">City</label>
+                        <div class="input-group">
+                            <input name="gst_city" type="text" class="form-control" id="gst_city"  placeholder="City"/>
+                        </div>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_gst_city">Please enter your City.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="gst_state_id">State</label>
+                        <select name="gst_state_id" class="form-control chosen" id="gst_state_id">
+							<option value="0">Select State</option>
+							<t t-foreach="state_ids" t-as="s">
+								<option t-att-value="s.id" t-esc="s.name" />
+							</t>
+						</select>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_gst_state_id">Please select state.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="gst_district_id">District</label>
+                        <select name="gst_district_id" class="form-control chosen" id="gst_district_id">
+							<option value="0">Select District</option>
+							<t t-foreach="district_ids" t-as="d">
+								<option t-att-value="d.id" t-esc="d.name" />
+							</t>
+						</select>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_gst_district_id">Please select district.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group required">
+                        <label for="reg_address">Registered Address</label>
+                        <div class="input-group">
+                            <textarea name="reg_address" type="text" id="reg_address" rows="2"
+                           placeholder="Registered Address"/>
+                        </div>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_reg_address">Please enter your registered address.</p>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template id="signup_fields">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="fname">First Name</label>
+                        <div class="input-group">
+                            <input name="fname" type="text"  id="fname" class="form-control" placeholder="First Name"/>
+                        </div>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_fname">Please enter first name.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="lname">Last Name</label>
+                        <div class="input-group">
+                            <input name="lname" type="text"  id="lname" class="form-control" placeholder="Last Name"/>
+                        </div>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_lname">Please enter last name.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="password">Password</label>
+                        <div class="input-group">
+                            <input name="password" type="password"  id="password" class="form-control" value="" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}" />
+                        </div>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_password">Please enter password.</p>
+                        <p class="text-danger pad-mar-0 font-size-12" id="CheckPasswordMatch"/>
+                        <p class="text-success pad-mar-0 font-size-12" id="CheckedPasswordMatch"/>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group required">
+                        <label for="confirm_password">Confirm Password</label>
+                        <div class="input-group">
+                            <input name="confirm_password" type="password" id="confirm_password" class="form-control" />
+                        </div>
+                        <p class="text-danger pad-mar-0 font-size-12 error_signup" id="error_confirm_password">Please confirm password.</p>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template id="b2b_checks">
+            <div class="row check-labels">
+                <div class="col-lg-12">
+                    <div class="form-group float-left mr-3">
+                        <label>
+                            <div class="input-group">
+                                <input name="cusrole" type="checkbox" id="builder"> &amp;nbsp;Builder/Company</input>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="form-group float-left mr-4">
+                        <label>
+                            <div class="input-group">
+                                <input name="cusrole" type="checkbox" id="rmc"> &amp;nbsp;RMC</input>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="form-group float-left mr-3">
+                        <label>
+                            <div class="input-group">
+                                <input name="cusrole" type="checkbox" id="manufacturer"> &amp;nbsp;Manufacturer</input>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="form-group float-left mr-3">
+                        <label>
+                            <div class="input-group">
+                                <input name="cusrole" type="checkbox" id="dealer"> &amp;nbsp;Dealer</input>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="form-group float-left">
+                        <label>
+                            <div class="input-group">
+                                <input name="cusrole" type="checkbox" id="others"> &amp;nbsp;Others</input>
+                            </div>
+                        </label>
+                    </div>
+                    <div style="clear:both;"/>
+                    <p class="text-danger pad-mar-0 font-size-12" id="error_user_role" style="display:none">Please select at least one role.</p>
+                </div>
+            </div>
+        </template>
+
+    </data>
+</odoo>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- TODO: styling -->
+        <record id="bs_res_config_settings_view_form" model="ir.ui.view">
+            <field name="name">bs.res.config.settings.view.form.inherit</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='invite_users']" position='before'>
+                     <div id="bs_settings">
+                        <h2>builderbay Settings</h2>
+                        <div class="row mt16 o_settings_container" name="bs_setting_container">
+                       		<div class="col-6 col-lg-6 o_setting_box">
+                        		<div class="o_setting_right_pane">
+                        			<p class="o_form_label">Customer</p>
+	                                <label for="outgng_sms" string="Outgoing SMS?" class="col-lg-5 o_light_label"/>
+	                                <field name="outgng_sms" widget="boolean_toggle"/>
+	                                <br/>
+	                                <label for="outgng_mail" string="Outgoing Mail?" class="col-lg-5 o_light_label"/>
+	                                <field name="outgng_mail" widget="boolean_toggle"/>
+	                            </div>
+                        	</div>
+                            <div class="col-6 col-lg-6 o_setting_box">
+	                            <div class="o_setting_right_pane">
+	                            	<p class="o_form_label">Vendor</p>
+	                                <label for="outgng_sms_vendor" string="Outgoing SMS?" class="col-lg-5 o_light_label"/>
+	                                <field name="outgng_sms_vendor" widget="boolean_toggle"/>
+	                                <br/>
+	                                <label for="outgng_mail_vendor" string="Outgoing Mail?" class="col-lg-5 o_light_label"/>
+	                                <field name="outgng_mail_vendor" widget="boolean_toggle"/>
+	                                <br/>
+	                            </div>
+                        	</div>
+                        	<div class="col-6 col-lg-6 o_setting_box">
+                        		<div class="o_setting_right_pane">
+                        			<p class="o_form_label">Internal User</p>
+	                                <label for="outgng_sms_inusr" string="Outgoing SMS?" class="col-lg-5 o_light_label"/>
+	                                <field name="outgng_sms_inusr" widget="boolean_toggle"/>
+	                                <br/>
+	                                <label for="outgng_mail_inusr" string="Outgoing Mail?" class="col-lg-5 o_light_label"/>
+	                                <field name="outgng_mail_inusr" widget="boolean_toggle"/>
+	                            </div>
+                        	</div>
+                            <div class="col-6 col-lg-6 o_setting_box">
+	                            <div class="o_setting_right_pane">
+	                            	<p class="o_form_label">Sales Person</p>
+	                                <label for="outgng_sms_sp" string="Outgoing SMS?" class="col-lg-5 o_light_label"/>
+	                                <field name="outgng_sms_sp" widget="boolean_toggle"/>
+	                                <br/>
+	                                <label for="outgng_mail_sp" string="Outgoing Mail?" class="col-lg-5 o_light_label"/>
+	                                <field name="outgng_mail_sp" widget="boolean_toggle"/>
+	                                <br/>
+	                            </div>
+                        	</div>
+                        	<div class="col-6 col-lg-6 o_setting_box">
+	                            <div class="o_setting_right_pane">
+	                            	<p class="o_form_label">Delivery Person</p>
+	                                <label for="outgng_sms_dp" string="Outgoing SMS?" class="col-lg-5 o_light_label"/>
+	                                <field name="outgng_sms_dp" widget="boolean_toggle"/>
+	                                <br/>
+	                                <label for="outgng_mail_dp" string="Outgoing Mail?" class="col-lg-5 o_light_label"/>
+	                                <field name="outgng_mail_dp" widget="boolean_toggle"/>
+	                                <br/>
+	                            </div>
+                        	</div>
+                            <div class="o_setting_right_pane col-12">
+                                <!-- <label for="outgng_sms" string="Pause Outgoing SMS?" class="col-lg-3 o_light_label"/>
+                                <field name="outgng_sms" widget="boolean_toggle"/>
+                                <br/>
+                                <label for="outgng_mail" string="Pause Outgoing Mail?" class="col-lg-3 o_light_label"/>
+                                <field name="outgng_mail" widget="boolean_toggle"/>
+                                <br/> -->
+                                <label for="otp_expiry_time" string="OTP Expires In" class="col-lg-3 o_light_label"/>
+                                <field name="otp_expiry_time" />
+                                <br/>
+                                <separator string="Website RFQ Notifications"/>
+                                <label for="notify_rfq_emails" string="Emails" class="col-lg-3 o_light_label"/>
+                                <field name="notify_rfq_emails"/>
+                                <label for="notify_rfq_sms" string="SMS" class="col-lg-3 o_light_label"/>
+                                <field name="notify_rfq_sms"/>
+                            </div>
+                        
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="action_generate_ban" model="ir.actions.server"><!-- Generates Bank Account Number -->
+            <field name="name">Generate BAN</field>
+<!--            <field name="groups" eval="[(4, ref('account.group_account_manager'))]"/>-->
+            <field name="model_id" ref="model_res_partner"/>
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+            <field name="binding_view_types">list,form</field>
+            <field name="state">code</field>
+            <field name="code">
+                action = records.generate_ban_code()
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

@@ -1,0 +1,505 @@
+.fa-spin:hover {
+  -webkit-animation: spin 2s infinite linear;
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
+}
+
+.brand-card {
+  background: #fff;
+  border-radius: 2px;
+  display: inline-block;
+  margin: 1rem;
+  position: relative;
+  border-radius: 5px;
+}
+
+.card-tile {
+  box-shadow: 0 5px 8px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  width: 150px;
+}
+
+.card-tile:hover {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.brand-image-tile{
+    height: 150px !important;
+    width: 150px !important;
+}
+
+.brand-tiles{
+    margin-top: 10%;
+    text-align: left;
+    margin-bottom: 5%;
+    display: inline-block;
+    li p{
+        text-align: center;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+}
+
+// Brands - Alphabet
+
+.brands-alphabet a, .brands-alphabet:before, .brands-alphabet,
+.share-icons a, .share-icons:before, .share-icons
+{ background: #43b6b3; color: #333333; }
+
+.icons-generic{
+    padding: 0;
+	margin: 0;
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	list-style: none;
+	display: grid;
+	grid-gap: 15px;
+}
+ul#brand-alphabet-buttons{
+    @extend .icons-generic;
+    margin-top: 3%;
+    grid-template-columns: repeat(26,1fr);
+}
+ul#social-share-icons {
+	@extend .icons-generic;
+	margin-top: 15%;
+    grid-template-columns: repeat(5,1fr);
+}
+
+
+
+ul#brand-alphabet-buttons li,
+ul#social-share-icons li{
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	box-sizing: border-box;
+	background: transparent;
+	border-radius: 12px;
+	position: relative;
+	overflow: hidden;
+	transition: .5s;
+	box-shadow: 0px 8px 16px -6px,
+				0px 0px 16px -6px;
+}
+
+ul#brand-alphabet-buttons li a ,
+ul#social-share-icons li a{
+	display: block;
+	widows: 100%;
+	height: 100%;
+	font-size: 2.25em;
+	background: transparent;
+	transition: .5s;
+	animation: icon-out .5s forwards;
+	animation-timing-function: cubic-bezier(0.5, -0.6, 1, 1);
+}
+
+ul#brand-alphabet-buttons li:before,
+ul#social-share-icons li:before{
+	content: "";
+	width: 90px;
+	height: 90px;
+	display: block;
+	position: absolute;
+	transform: rotate(-45deg) translate(-110%, -23px);
+	z-index: -2;
+	animation: back-out .5s forwards;
+	animation-timing-function: cubic-bezier(0.5, -0.6, 1, 1);
+}
+
+ul#brand-alphabet-buttons li:hover a,
+ul#social-share-icons li:hover a{
+	animation: icon-in .5s forwards;
+	animation-timing-function: cubic-bezier(0, 0, 0.4, 1.6);
+}
+
+ul#brand-alphabet-buttons li:hover:before,
+ul#social-share-icons li:hover:before{
+	animation: back-in .5s forwards;
+	animation-timing-function: cubic-bezier(0, 0, 0.4, 1.6);
+}
+
+@keyframes back-in {
+    0% { transform: rotate(-45deg) translate(-110%, -23px); }
+	80% { transform: rotate(-45deg) translate(5%, -23px); }
+	100% { transform: rotate(-45deg) translate(0%, -23px); }
+}
+
+@keyframes back-out {
+    0% { transform: rotate(-45deg) translate(0%, -23px); }
+	20% { transform: rotate(-45deg) translate(5%, -23px); }
+	100% { transform: rotate(-45deg) translate(-110%, -23px); }
+}
+
+@keyframes icon-in {
+    0% { font-size: 1.25em; }
+	80% { color: #fff; font-size: 1.5em; }
+	100% { color: #fff; font-size: 1.35em; }
+}
+
+@keyframes icon-out {
+	0% { color: #fff; font-size: 1.35em; }
+	20% { color: #fff; font-size: 1.5em; }
+	100% { font-size: 1.25em; }
+}
+
+
+
+
+
+// Shop Terms & Conditions - accordion structure ----------------------- STARTS
+
+.heading-primary {
+  font-size:2em;
+  padding:2em;
+  text-align:center;
+}
+.accordion dl,
+.accordion-list {
+   //border:1px solid #ddd;
+   &:after {
+       content: "";
+       display:block;
+       height:1em;
+       width:100%;
+       //background-color:darken(#43b6b3, 10%);
+     }
+}
+.accordion dd,
+.accordion__panel {
+   background-color:#eee;
+   font-size:1em;
+  float: left;
+  margin-top: -10px !important;
+   line-height:1.5em;
+}
+.accordion p {
+  padding:1em 2em 1em 2em;
+}
+
+.accordion {
+    position:relative;
+
+    //background-color:#eee;
+}
+.accountaccordion{
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
+}
+.accountbottomaccordion{
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+}
+.accordionTitle,
+.accordion__Heading {
+ background-color:#43b6b3;
+   text-align:center;
+     font-weight:700;
+          padding:1em;
+          display:block;
+
+          text-decoration:none;
+          color:#fff;
+          transition:background-color 0.5s ease-in-out;
+  border-bottom:1px solid darken(#43b6b3, 5%);
+  &:before {
+   content: "^";
+   font-size:1.5em;
+   line-height:0.5em;
+   float:left;
+    margin: 10px;
+   transition: transform 0.3s ease-in-out;
+  }
+  &:hover,  &:active,  &:focus {
+    background-color:darken(#43b6b3, 10%);
+    color: white !important;
+    text-decoration: none;
+  }
+
+}
+.accordionTitleActive,
+.accordionTitle.is-expanded {
+   background-color:darken(#43b6b3, 10%);
+    &:before {
+
+      transform: rotate(-180deg);
+      border: 1px solid #fff;
+      height: 18px;
+      width: 18px;
+      padding: 5px;
+      display: table;
+      border-radius: 50%;
+    }
+}
+.accordionItem {
+    height:auto;
+    overflow:hidden;
+    //SHAME: magic number to allow the accordion to animate
+
+     max-height:50em;
+    transition:max-height 1s;
+
+
+    @media screen and (min-width:48em) {
+         max-height:15em;
+        transition:max-height 0.5s
+
+    }
+
+
+}
+
+.accordionItem.is-collapsed {
+    max-height:0;
+}
+.no-js .accordionItem.is-collapsed {
+  max-height: auto;
+}
+.animateIn {
+     animation: accordionIn 0.45s normal ease-in-out both 1;
+}
+.animateOut {
+     animation: accordionOut 0.45s alternate ease-in-out both 1;
+}
+@keyframes accordionIn {
+  0% {
+    opacity: 0;
+    transform:scale(0.9) rotateX(-60deg);
+    transform-origin: 50% 0;
+  }
+  100% {
+    opacity:1;
+    transform:scale(1);
+  }
+}
+
+@keyframes accordionOut {
+    0% {
+       opacity: 1;
+       transform:scale(1);
+     }
+    100% {
+          opacity:0;
+           transform:scale(0.9) rotateX(-60deg);
+       }
+}
+
+//----------------------------------------------ENDS------------------------------------
+
+
+/* -------------- PORTAL ------------------ */
+#bs-hide {
+    display: none;
+}
+
+
+
+/* Chowdary */
+.bg-brandcolor4{background: lightslategrey;}
+.bs-white-space{white-space: nowrap;}
+.bs-table-auto {
+    table-layout : auto !important;
+}
+.brandcolor11{color: #3e4349;}
+  .brandcolor12{color: #8e8e8e;}
+
+
+/* Chowdary - coming soon starts */
+ .coming-soon{ border: 2px solid rgba(0, 0, 0, 0.199);padding: 20px 0px;border-radius: 30px;}
+  .coming-soon p{
+    margin-top: -117px;
+    background: #FFF;
+    padding: 6px 5px;
+    margin: 0px auto;
+    width: 350px;
+    margin-top: -37px;
+}
+  .coming-soon .form-inline{align-items: center;justify-content: center;padding: 20px 0px 10px 0px; }
+  /* Chowdary - coming soon ends */
+
+/* hilight span content to edit addres page */
+.hilight{
+	border-bottom:2px solid black;
+}
+
+
+
+/* leave an enquiry */
+.leave-enquiry button{
+    padding: 5px 30px;
+}
+
+  .float-label-field {
+    border: none;
+    outline: none;
+    position: relative;
+    margin: 0 0 20px 0;
+    padding:0px 10px;
+    box-sizing: border-box;
+    border: solid 1px rgba(0, 0, 0, 0.253);
+  }
+
+  .float-label-field input {
+    border: none;
+    outline: none;
+    padding: 5px 5px 8px 0px;
+    width: 100%;
+    font-size: 18px;
+
+  }  .float-label-field select , .float-label-field textarea {
+    border: none;
+    outline: none;
+    padding: 5px 5px 8px 0px;
+    width: 100%;
+    font-size: 18px;
+
+  }
+  .form-control:focus {
+    border-color: inherit;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    outline: none;
+  }
+
+
+  .float-label-field label {
+    position: absolute;
+    font-size: 14px;
+    z-index: 9;
+    background: #FFF;
+    padding: 0px 15px;
+    margin-top: -14px;
+
+  }
+
+  .float-label-field  ~ label:focus {
+    outline: none;
+    background: #ff4a56;
+    color: white;
+    margin-top: 30px;
+  }
+  .bs-multiple-select{position: relative;margin-bottom:20px;}
+  .bs-multiple-select label{
+    z-index: 99;
+    position: absolute;
+    top: -22px;
+    background: #FFF;
+    left: 15px;
+    padding: 5px 10px;
+  }
+  .drop.open  label {
+    -moz-transform: translate(0, -35px);
+    -ms-transform: translate(0, -35px);
+    -webkit-transform: translate(0, -35px);
+    transform: translate(0, -35px);
+  }
+
+
+.form-control{
+    height: calc(1.5em + 0.75rem + 2px) !important;
+}
+
+
+/* Profile pages starts */
+.bs-banks table th{font-family: 'Lato-Bold';font-size: 14px; text-align: center;background: #d5dbe2;}
+.bs-banks table td{font-family: 'Lato-Regular';text-align: center;}
+/* Profile pages ends */
+
+
+.b2b-login-main{
+    background-image:linear-gradient(#dee9fc, #fff);
+    padding:30px 0px;
+    .b2b-login-under{
+        margin:auto;
+        display:table;
+        img{
+            height:250px;
+        }
+        .b2b-login-h2{
+            text-align:center;
+            font-size:20px;
+            font-family: Lato-Black;
+            font-weight:bold;
+            color:#131921;
+            margin: 40px 0px 5px 0px;
+        }
+        .b2b-login-h3{
+            text-align:center;
+            font-size:15px;
+            font-family: Lato-Light;
+            font-weight:bold;
+            color:#131921;
+        }
+        .business-login-btn{
+            font-size:18px;
+            font-family: Lato-Bold;
+            color:#fff;
+            margin: 20px auto;
+            display:table;
+            background-color: #1d4da0;
+            padding:10px 20px;
+        }
+        .create-business-account{
+            color:#1d4da0;
+            font-size:16px;
+            font-family: Lato-Bold;
+            margin: auto;
+            display: table;
+            text-decoration:underline;
+        }
+        .create-business-account:hover{
+            color:#1d4da0;
+            text-decoration:underline;
+        }
+    }
+}
+
+
+/* Report-invoice: TODO:remve - styles didnt work
+.bs-report-bank-details td{
+    padding: 5px !important;
+}
+.boldTag{
+    font-weight: bold !important;
+}
+.zero-number{
+    position: relative;
+}
+.zero-number img{
+    position: absolute;
+    height: 30px;
+    top: 23px;
+    left: -5px;
+}*/
+
+body{
+    font-family: Lato-Regular !important;
+}
+.order-number{
+    span{
+        font-family: 'Lato-Regular';
+        font-size: 30px;
+    }
+    em{
+        font-family: 'Lato-Bold';
+        font-size: 30px;
+    }
+}
+.remove-mar-bot{
+    margin-bottom:0px !important;
+}
+.o_standard_footer {
+    position: absolute;
+    margin-top: 0px !important;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    .list-inline-item {
+        white-space: nowrap;
+    }
+}

@@ -1,0 +1,133 @@
+/* DASHBOARD */
+:root {
+    --bg-back:#131921 ;
+    --bg-back2:#232f3e ;
+    --bg-back3:#303e4f ;
+    --bg-back4:#1c181f ;
+    --bg-back4-footer:#ada4b4 ;
+
+    --bg-top-nave : #232f3e;
+    --bg-top-header  :#089f9d;
+    --bg-coloor-1:#ffeff0;
+    --bg-coloor-2:#fff2ef;
+    --bg-coloor-3:#fff6e2;
+    --bg-coloor-4:#ecf7da;
+    --bg-coloor-5:#e1f5ee;
+    --bg-coloor-6:#e6e9f7;
+    --bg-coloor-7:#f6e3f2;
+  }
+.bs-user-list{text-align: center;}
+.bs-user-list li{ width: 23.333%;display: inline-block;margin-top: 10px ;margin-right: 10px;margin-bottom: 15px;}
+
+.bs-user-list li h3{    font-family: 'Lato-Black';font-size: 15px;margin: 0px;text-align: left;}
+.bs-user-list li p{font-size: 25px;margin: 0px;text-align: left;}
+.bs-user-list .card-body{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 17px 20px;
+}
+.bs-user-list .card-content{
+ padding: 0px;
+}
+.bs-user-list .card-body img{
+  flex-wrap: wrap;
+}
+.bs-user-list .card{
+  display: flex;
+    flex-direction: row;
+    box-shadow: 0px 1px 2px #00000044;
+    border: none;
+    border-radius: 10px;
+}
+.bs-user-list .card-bg-1 h3{color: #a87578;}
+.bs-user-list .card-bg-2 h3{color: #c57f6e;}
+.bs-user-list .card-bg-3 h3{color: #a8915f;}
+.bs-user-list .card-bg-4 h3{color: #72874f;}
+.bs-user-list .card-bg-5 h3{color: #5b8f7d;}
+.bs-user-list .card-bg-6 h3{color: #5d658b;}
+.bs-user-list .card-bg-7 h3{color: #966f8e;}
+.bs-user-list .card-bg-1{background: var(--bg-coloor-1);}
+.bs-user-list .card-bg-2{background: var(--bg-coloor-2);}
+.bs-user-list .card-bg-3{background: var(--bg-coloor-3);}
+.bs-user-list .card-bg-4{background: var(--bg-coloor-4);}
+.bs-user-list .card-bg-5{background: var(--bg-coloor-5);}
+.bs-user-list .card-bg-6{background: var(--bg-coloor-6);}
+.bs-user-list .card-bg-7{background: var(--bg-coloor-7);}
+
+
+
+/* NEW ORDERS Page */
+.order-list table th{font-family: "Lato-bold"; font-size: 14px; text-align: center;background: #d5dbe2;}
+.order-list table td{font-size: 14px;padding: 10px;}
+.order-list button{font-size: 14px;padding: 2px 10px;}
+.order-list  tr td button{font-size: 14px;padding: 2px 10px;margin:0px 5px;}
+.order-list  tr td input{padding: 0px 10px ;height: 25px;font-size: 14px; font-family: "Lato-bold";color: #3e4349;}
+.bs-border-none{
+    border: none !important;
+}
+
+.order-list .table-responsive-lg{margin-bottom: 20px;}
+.update-price{
+  padding: 10px 30px !important;
+}
+.grand-tottal .form-check-inline{justify-content: space-between;}
+ .order-list tr td input[type=checkbox]{height: auto;}
+ .overflow{overflow: hidden;}
+ .order-list .form-group {
+  margin-bottom: .5rem;
+}
+
+ .order-list  tr td{
+min-width: auto !important;}
+
+
+.bs-table-address .dropdown-toggle:after {display: none;}
+.bs-table-address .arrow{margin-left: 10px;}
+  .bs-padding0{
+    padding: 0px !important;
+  }
+
+
+
+.bs-order-navbar{position: relative;margin-bottom: 20px;}
+.bs-order-navbar .navbar{background: #f0f3f6;padding: 0px;}
+.bs-order-navbar .navbar p{line-height: 15px;margin-bottom: 0px;}
+.bs-order-navbar .navbar a{padding: 10px 20px;}
+.bs-order-navbar .navbar li{border-right: 1px solid #d8dadd;}
+.bs-order-navbar .navbar li.active{color:var(--bg-top-header);background: #FFF;}
+.bs-order-navbar .navbar li.active a{color:var(--bg-top-header);background: #FFF;}
+
+
+/*  brand color */
+
+  .brandcolor{color: #282c3f;}
+  .brandcolor2{color: #6d6c6c;}
+  .brandcolor3{color:#1d4da0}
+  .brandcolor4{color:#0d3f9a}
+  .brandcolor5{color:#666666}
+  .brandcolor6{color:#223f5c}
+  .brandcolor7{color:#1e51a6}
+  .brandcolor8{color:#506994}
+  .brandcolor9{color: #000;}
+  .brandcolor10{color: #ca2d2d;}
+  .brandcolor11{color: white;}
+
+
+
+
+
+ /* bg */
+.bg-brandcolor5{background: #3da22c;}
+
+fontsize14{font-size: 14px;}
+.fontsize20{  font-size: 20px;}
+.fontsize21{font-size: 21px;  }
+.fontsize10{font-size: 10px;  }
+.fontsize12{font-size: 12px;  }
+.fontsize11{font-size: 11px;  }
+.fontsize18{font-size: 18px;  }
+
+.order-list table{
+	table-layout: inherit !important;
+}

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- enquiry -->
+    <record id="bs_enquiry_tree" model="ir.ui.view">
+        <field name="name">bs.enquiry.tree</field>
+        <field name="model">bs.enquiry</field>
+        <field name="arch" type="xml">
+            <tree string="Click &amp; Upload">
+                <field name="partner_id"/>
+                <field name="so_id" invisible="1"/>
+                <field name="ecomm_category_ids" />
+                <field name="ecomm_subcateg_ids"/>
+                <field name="brand_ids" />
+                <field name="uom_id"/>
+                <field name="location_ids"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="bs_enquiry_form" model="ir.ui.view">
+        <field name="name">bs.enquiry.form</field>
+        <field name="model">bs.enquiry</field>
+        <field name="arch" type="xml">
+            <form string="Enquiry">
+                <sheet>
+                    <h3><field name="name" readonly="1"/></h3>
+                    <group col="4">
+                        <field name="partner_id" required="1"/>
+                        <field name="ecomm_category_ids" widget="many2many_tags" required="1"/>
+                        <field name="ecomm_subcateg_ids" widget="many2many_tags" required="1"/>
+                        <field name="brand_ids" widget="many2many_tags" required="1"/>
+                        <field name="material_description" required="1"/>
+                        <field name="uom_id" required="1"/>
+                        <field name="location_ids" required="1"/>
+                        <field name="so_id" invisible="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="bs_enquiry_action" model="ir.actions.act_window">
+        <field name="name">Enquiry</field>
+        <field name="res_model">bs.enquiry</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <!-- click.upload -->
+    <record id="bs_click_upload_tree" model="ir.ui.view">
+        <field name="name">bs.click.upload.tree</field>
+        <field name="model">bs.click.upload</field>
+        <field name="arch" type="xml">
+            <tree string="Click &amp; Upload">
+                <field name="enq_code"/>
+                <field name="so_id" invisible="1"/>
+                <field name="name"/>
+                <field name="phone_no"/>
+                <field name="gstin"/>
+                <field name="trade_name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="bs_click_upload_form" model="ir.ui.view">
+        <field name="name">bs.click.upload.form</field>
+        <field name="model">bs.click.upload</field>
+        <field name="arch" type="xml">
+            <form string="Click &amp; Upload">
+                <sheet>
+                    <h3><field name="enq_code" readonly="1"/></h3>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                            <field name="partner_id"/>
+                            <field name="phone_no" required="1"/>
+                            <field name="gstin" required="1"/>
+                            <field name="trade_name" required="1"/>
+                            <field name="address" required="1"/>
+                            <field name="so_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="price_enquiry_attachment_ids"/>
+                            <field name="delivery_address_attachment_ids"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="bs_click_upload_action" model="ir.actions.act_window">
+        <field name="name">Click &amp; Upload</field>
+        <field name="res_model">bs.click.upload</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_enquiry_id" name="Enquiry" parent="sale.sale_menu_root" sequence="10" />
+    <menuitem id="bs_enquiry_id" action="bs_click_upload_action" parent="menu_enquiry_id" sequence="1"/>
+    <menuitem id="bs_click_upload_menu_id" action="bs_enquiry_action" parent="menu_enquiry_id" sequence="2"/>
+
+</odoo>

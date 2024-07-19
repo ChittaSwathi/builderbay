@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="coming_soon" name="Coming Soon">
+            <t t-call="website.layout">
+                <section>
+                  <div class="container">
+
+                    <div class="row text-center">
+                        <div class="col-lg-12 text-center">
+                            <img class="img-fluid" src="/builderbay/static/src/images/coming-soon.png" alt="coming-soon" />
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-lg-12 text-center">
+                            <div class="bs-panel-size600 coming-soon mt-4">
+<!--                                <p><t t-esc="message"/></p>-->
+                                <form class="form-inline text-center" >
+                                    <label class="latoblack fontsize21 mr-2"> <img src="/builderbay/static/src/images/phone-number1.png" class="mr-2"/>
+                                        <t t-esc="res_company.cust_care_phone"/>
+                                    </label>
+                                    <label class="latoblack fontsize21 ml-3 mr-2"><img src="/builderbay/static/src/images/mail-icon1.png" class="mr-2"/>
+                                        <t t-esc="res_company.cust_care_email"/>
+                                    </label>
+                                  </form>
+                            </div>
+                        </div>
+                      </div>
+                  </div>
+                </section>
+
+                <section class="bs-adbox">
+                  <div class="container">
+                    <div class="row">
+                      <div class="col-md-6"> <img src="/builderbay/static/src/images/ads.jpg" alt="" title="" class="img-fluid"/> </div>
+                      <div class="col-md-6"> <img src="/builderbay/static/src/images/ads2.jpg" alt="" title="" class="img-fluid"/> </div>
+                    </div>
+                  </div>
+                </section>
+            </t>
+        </template>
+
+        <template id="b2b_login">
+            <t t-call="website.layout">
+                <div class="b2b-login-main">
+                    <div class="b2b-login-under">
+                        <img src="/builderbay/static/src/images/banner-construction-material.png"/>
+                        <h2 class="b2b-login-h2">Please login as a business customer.</h2>
+                        <h3 class="b2b-login-h3">This is for project needs and not for sale.</h3>
+                        <input type="button" value="Business Login" class="btn business-login-btn"/>
+                        <a href="/web/login" class="create-business-account">Create a Business Account</a>
+                    </div>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>

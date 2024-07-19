@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="bs_sms_log_tree" model="ir.ui.view">
+        <field name="name">bs.sms.log.tree</field>
+        <field name="model">bs.sms.log</field>
+        <field name="arch" type="xml">
+            <tree string="SMS Log" edit="false" create="false" delete="false">
+                <field name="name"/>
+                <field name="recipient_id"/>
+                <field name="mobile"/>
+                <field name="sent_time"/>
+                <field name="response"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="bs_sms_log_form" model="ir.ui.view">
+        <field name="name">bs.sms.log.form</field>
+        <field name="model">bs.sms.log</field>
+        <field name="arch" type="xml">
+            <form string="SMS Log" edit="false" create="false" delete="false">
+                <sheet>
+                    <h1>
+                        <field name="name"/>
+                    </h1>
+                    <group>
+                        <group>
+                            <field name="recipient_id"/>
+                            <field name="mobile"/>
+                            <field name="otp"/>
+                            <field name="sent_time"/>
+                            <field name="response"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group>
+                            <field name="model"/>
+                            <field name="res_id"/>
+                            <field name="sms_type"/>
+                            <field name="subtype"/>
+<!--                            <field name="gateway_id"/>-->
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="SMS">
+                            <field name="body"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+<!--    <record id="xf_sms_log_search" model="ir.ui.view">-->
+<!--        <field name="name">bs.sms.log.search</field>-->
+<!--        <field name="model">bs.sms.log</field>-->
+<!--        <field name="type">search</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <search>-->
+
+<!--                <field name="name" string="Ref#" />-->
+<!--                <field name="partner_id" string="Customer" />-->
+<!--                <field name="mobile" string="Mobile" />-->
+
+<!--                <filter name="collection" string="Collection" domain="[('subtype','=', 'collection')]" help="Collection OTPs"/>-->
+<!--                <filter name="handover" string="Handover" domain="[('subtype','=', 'handover')]" help="Handover OTPs"/>-->
+<!--                <filter name="signin" string="Sign-In" domain="[('subtype','=', 'signin')]" help="Sign-In OTPs"/>-->
+<!--                <filter name="others" string="Others" domain="[('subtype','=', 'others')]" help="Others"/>-->
+
+<!--                <group expand="0" string="Group By">-->
+<!--                    <filter string="Customer" domain="[]" context="{'group_by':'partner_id'}" />-->
+<!--&lt;!&ndash;                    <filter string="SMS Gateway" domain="[]" context="{'group_by':'gateway_id'}" />&ndash;&gt;-->
+<!--                    <filter string="Type" domain="[]" context="{'group_by':'subtype'}" />-->
+<!--                </group>-->
+<!--            </search>-->
+<!--        </field>-->
+<!--    </record>-->
+
+    <record id="bs_sms_log_action" model="ir.actions.act_window">
+        <field name="name">SMS Log</field>
+        <field name="res_model">bs.sms.log</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <menuitem
+        id="bs_sms_log_menu"
+        name="SMS Log"
+        action="bs_sms_log_action"
+        parent="base.menu_email"
+        />
+
+
+</odoo>

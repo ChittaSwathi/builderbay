@@ -1,0 +1,771 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Overridden -->
+    <template id="payment.payment_tokens_list" name="Payment Tokens list">
+        <!--
+        Variables description:
+            - 'submit_txt' the text displayed inside the submit button
+            - 'submit_class' the css classes to style the submit button
+            - 'icon_class' font awesome class (e.g. 'fa-trash', 'fa-lock')
+            - 'form_action' the URI to the page that will handle the form values given for server2server
+            - 'pms' the tokens
+            - 'checked_pm_id' the payment token that should be checked (for radio buttons)
+            - 'mode' can take two values, either 'payment' or 'manage'. 'manage' displays the add a new card and delete buttons. 'payment'
+                display a form that is used to pay and send the information to the form action url.
+            - 'acquirers' the list of both server2server and form payment acquirers
+            - 'verify_validity' if we need to verify if the payment method is valid when adding a new one
+            - 'prepare_tx_url' the url of the route which will handle the creation of a transaction for a form base payment (handles if the transaction is form or form_save)
+            - 'show_manage_btn' if True, a button is added in the footer to manage payment methods
+        -->
+        <form t-if="pms or acquirers" method="post" class="o_payment_form mt-3 clearfix"
+                t-att-action="form_action if form_action else '#'"
+                t-att-data-success-url="success_url or ''"
+                t-att-data-error-url="error_url or ''"
+                t-att-data-access-token="access_token or ''"
+                t-att-data-partner-id="partner_id"
+                t-att-data-callback-method="callback_method or ''"
+                t-att-data-order-id="order_id or ''"
+                t-att-data-mode="mode">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <input type="hidden" t-if="prepare_tx_url" name="prepare_tx_url" t-att-value="prepare_tx_url"/>
+            <input type="hidden" t-if="order_id" name="order_id" t-att-value="order_id"/>
+            <!-- s2s form submission -->
+            <input type="hidden" t-if="access_token" name="access_token" t-att-value="access_token"/>
+            <input type="hidden" t-if="success_url" name="success_url" t-att-value="success_url"/>
+            <input type="hidden" t-if="error_url" name="error_url" t-att-value="error_url"/>
+            <input type="hidden" t-if="callback_method" name="callback_method" t-att-value="callback_method"/>
+
+            <div class="card">
+                <t t-set="acquirers_count" t-value="len(acquirers) if acquirers else 0"/>
+                <t t-set="pms_count" t-value="len(pms) if pms else 0"/>
+                <t t-set="MAX_BRAND_LINE" t-value="3"/>
+                <t t-foreach="acquirers" t-as="acq">
+                    <div class="card-body o_payment_acquirer_select">
+                        <label class="font-size-16 font-family-reg">
+                            <t t-if="acq.payment_flow == 'form'">
+                                <input type="radio" t-att-data-acquirer-id="acq.id"
+                                       t-att-data-form-payment="true"
+                                       t-att-data-provider="acq.provider"
+                                       t-att-class="'d-none' if (acquirers_count==1 and pms_count==0) else ''"
+                                       name="pm_id" t-attf-value="form_{{acq.id}}"
+                                       t-att-checked="acquirers_count==1 and pms_count==0 or acquirers[0] == acq"/>
+                            </t>
+                            <t t-else="acq.payment_flow == 's2s'">
+                                <input type="radio" t-att-data-acquirer-id="acq.id"
+                                       t-att-data-s2s-payment="true"
+                                       t-att-data-provider="acq.provider"
+                                       name="pm_id" t-attf-value="new_{{acq.id}}"
+                                       t-att-class="'d-none' if (acquirers_count==1 and pms_count==0) else ''"
+                                       t-att-checked="acquirers_count==1 and pms_count==0 or acquirers[0] == acq"/>
+                            </t>
+                            <span class="payment_option_name" style="font-size:14px;font-family:Lato-Regular;">
+                              <t t-esc="acq.display_as or acq.name"/>
+                              <div t-if="acq.state == 'test'" class="badge-pill badge-warning float-right" style="margin-left:5px">
+                                Test Mode
+                              </div>
+                            </span>
+                            <t t-if="acq_extra_fees and acq_extra_fees.get(acq)">
+                                <span class="badge badge-pill badge-secondary"> +
+                                    <t t-esc="acq_extra_fees[acq]" t-options='{"widget": "monetary", "display_currency": acq_extra_fees["currency_id"]}'/> Fee </span>
+                            </t>
+                            <t t-elif="acq.fees_active and request.env.user
+                                and request.env.user.partner_id.customer_type == 'b2c'">
+                                <small class="text-muted">(Some fees may apply)</small>
+                            </t>
+
+                        </label>
+                        <div t-if="acq.is_neft">
+                            <t t-set="PartnerRec" t-value="request.env.user.partner_id"/>
+                            <div>
+                                    <h5 class="font-family-black font-size-14 text-color-block mar-bot-20">Bank Details:</h5>
+                                    <div class="row pad-mar-0">
+                                      <div class="col-lg-4 pad-mar-0">
+                                        <div class="input-copy">
+                                          <label class="font-size-12 font-family-bold">Bank A/c No.</label>
+                                          <input type="text" name="bankaccountno"
+                                                 class="copy-input font-family-black font-size-14 text-color-block"
+                                                 t-att-value="PartnerRec.bs_acct_no" readonly="true" id="bankaccountno"/>
+                                          <p onclick="bankCopy()">Copy</p>
+                                        </div>
+                                      </div>
+                                      <div class="col-lg-4 pad-right-0">
+                                        <div class="input-copy">
+                                          <label class="font-size-12 font-family-bold">IFSC Code</label>
+                                          <input type="text" name="bankaccountno"
+                                                 class="copy-input font-family-black font-size-14 text-color-block"
+                                                 t-att-value="PartnerRec.bs_acct_ifsc_code" readonly="true" id="ifsccode" />
+                                          <p onclick="ifscCodeCopy()">Copy</p>
+                                        </div>
+                                      </div>
+                                      <div class="col-lg-4 pad-right-0">
+                                        <div class="input-copy">
+                                          <label class="font-size-12 font-family-bold">Beneficiary Name</label>
+                                          <input type="text" name="bankaccountno" class="copy-input font-family-black font-size-14 text-color-block"
+                                                 t-att-value="PartnerRec.bs_acct_beneficiary_name" readonly="true"
+                                                 id="beneficiary" />
+                                          <p onclick="beneficiaryCopy()">Copy</p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="row pad-mar-0 mar-top-20">
+                                      <div class="col-lg-12 pad-mar-0">
+                                        <div class="input-copy">
+                                          <label class="font-size-12 font-family-bold">Bank Address</label>
+                                          <input type="text" name="bankaccountno" class="copy-input font-family-black font-size-14 text-color-block"
+                                            t-att-value="PartnerRec.bs_acct_address" readonly="true" id="bankaddress" />
+                                          <p onclick="bankAddressCopy()">Copy</p>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div class="row pad-mar-0 mar-top-20 mar-bot-30">
+                                        <div class="col-lg-6 pad-mar-0">
+                                            <div class="input-copy">
+                                              <label class="font-size-12 font-family-bold">Communication</label>
+                                              <input type="text" name="order_ref"
+                                                     class="copy-input font-family-black font-size-14 text-color-block"
+                                                t-att-value="order.name" readonly="true" id="order_ref" />
+                                            </div>
+                                      </div>
+                                      <div class="col-lg-6 pad-mar-0">
+                                        <div class="normal-input">
+                                          <input type="text" id="utr_no" name="utr_no" required="required"
+                                                 class="font-family-black font-size-14 text-color-block" placeholder="Enter UTR number"/>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                        </div>
+
+
+                        <ul class="float-right list-inline payment_icon_list">
+                            <t t-set="i" t-value="0"/>
+                            <t t-foreach="acq.payment_icon_ids" t-as="pm_icon">
+                                <li t-attf-class="list-inline-item#{'' if (i &lt; MAX_BRAND_LINE) else ' d-none'}">
+                                    <span t-field="pm_icon.image_payment_form"
+                                          t-options='{"widget": "image", "alt-field": "name"}'/>
+                                </li>
+                                <li t-if="i==MAX_BRAND_LINE" style="display:block;" class="list-inline-item">
+                                    <span class="float-right more_option text-info">
+                                        <a href="#" class="o_payment_form_pay_icon_more" data-toggle="tooltip"
+                                          t-att-title="', '.join([opt.name for opt in acq.payment_icon_ids[MAX_BRAND_LINE:]])">and more</a>
+                                    </span>
+                                </li>
+                                <t t-set="i" t-value="i+1"/>
+                            </t>
+                        </ul>
+                        <div t-raw="acq.pre_msg" class="text-muted ml-3 fontsize-14 font-family-reg"/>
+                        <t t-if="env.ref('payment_atom.payment_acquirer_atom').id == acq.id">
+                            <div class="text-muted ml-3">
+                                <a class="fontsize12 font-family-bold" target="blank" href="/terms">Terms &amp; Conditions</a>,
+                                <a class="fontsize12 font-family-bold" target="blank" href="/policy/privacy">Privacy Policy</a>
+                            </div>
+                        </t>
+                    </div>
+                    <t t-if="acq.payment_flow == 'form'">
+                        <div t-attf-id="o_payment_form_acq_{{acq.id}}"
+                             t-attf-class="d-none {{'card-footer' if acq.save_token == 'ask' else ''}}">
+                            <label t-if="acq.save_token == 'ask'">
+                                <input type="checkbox" name="o_payment_form_save_token" data-remove-me=""/>
+                                Save my payment data
+                            </label>
+                            <t t-if="acq.save_token == 'always'">
+                                <input type="checkbox" name="o_payment_form_save_token" checked="'checked'" class="o_hidden" data-remove-me=""/>
+                            </t>
+                        </div>
+                    </t>
+                    <t t-else="acq.payment_flow == 's2s'">
+                        <div t-attf-id="o_payment_add_token_acq_{{acq.id}}"
+                             t-attf-class="card-footer {{'d-none' if(acquirers_count &gt; 1 and pms_count==0 and acquirers[0]!=acq) else 'd-none' if pms_count &gt;0 else ''}}">
+                            <div class="clearfix">
+                                <input type="hidden" t-if="(verify_validity==True or mode == 'manage') and acq.check_validity" name="verify_validity" t-att-value="acq.check_validity"/>
+                                <t t-call="{{acq.sudo().get_s2s_form_xml_id()}}">
+                                    <t t-set="id" t-value="acq.id"/>
+                                    <t t-set="partner_id" t-value="partner_id"/>
+                                    <t t-if="not return_url" t-set="return_url" t-value="''"/>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+                <t t-foreach="pms" t-as="pm">
+                    <t t-if="not verify_validity or (pm.acquirer_id.check_validity and pm.verified) or not pm.acquirer_id.check_validity">
+                        <div class="card-body o_payment_acquirer_select">
+                            <label>
+                                <input t-if="mode == 'payment'" type="radio" name="pm_id" t-att-value="pm.id" t-att-checked="checked_pm_id == pm.id"/>
+                                <span class="payment_option_name" t-esc="pm.name"/>
+                                <t t-if="pm.verified">
+                                    <i class="fa fa-check text-success" title="This payment method is verified by our system." role="img" aria-label="Ok"></i>
+                                </t>
+                                <t t-else="">
+                                    <i class="fa fa-check text-muted" title="This payment method has not been verified by our system." role="img" aria-label="Not verified"></i>
+                                </t>
+                            </label>
+                            <button t-if="mode == 'manage'" name="delete_pm" t-att-value="pm.id" class="btn btn-primary btn-sm float-right">
+                                <i class="fa fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </t>
+                </t>
+            </div>
+            <div t-if='back_button_txt' class="float-left mt-2">
+                <a role="button" t-att-href="back_button_link or '#'" t-att-class="back_button_class or 'btn btn-lg btn-secondary'">
+                    <i t-if="back_button_icon_class" t-attf-class="fa {{back_button_icon_class}}"/>
+                    <t t-esc="back_button_txt"/>
+                </a>
+            </div>
+            <div class="float-right mt-2">
+                <button t-if="mode == 'payment'" id="o_payment_form_pay" type="submit" t-att-order-id="order_id"
+                        t-att-class="submit_class if submit_class else 'btn btn-primary btn-lg mb8 mt8'" disabled="true">
+                    <t t-if="submit_txt">
+                        <i t-if="icon_class and not icon_right" t-attf-class="fa {{icon_class}}"/>
+                        <t t-esc="submit_txt"/>
+                        <i t-if="icon_class and icon_right" t-attf-class="fa {{icon_class}}"/>
+                    </t>
+                    <t t-else="">
+                        <i class="fa fa-lock"/> Pay
+                    </t>
+                </button>
+                <t t-if="show_manage_btn">
+                    <a class="btn btn-link mb8 mt8" href="/my/payment_method">Manage your payment methods</a>
+                </t>
+                <button t-if="mode == 'manage' and list(filter(lambda x: x.payment_flow == 's2s', acquirers))" type="submit" id="o_payment_form_add_pm" class="btn btn-primary btn-lg mb8 mt8">
+                    <i class="fa fa-plus-circle"/> Add new card
+                </button>
+            </div>
+        </form>
+    </template>
+
+    <template id="bs_cart" name="Cart">
+        <t t-call="website.layout">
+            <div class="main-section" id="cust_crt">
+                <div class="main-cart-view pad-left-right-20">
+                  <div class="row pad-mar-0">
+                    <div class="col-lg-8 pad-mar-0">
+                      <div class="products-view">
+                        <div class="row pad-mar-0 mar-top-10 mar-bot-10">
+                          <div class="col-lg-4 pad-mar-0">
+                            <h5 class="font-family-black font-size-16 text-color-block mar-0">Your Cart</h5>
+                          </div>
+                          <t t-if="res_company.cust_care_phone">
+                            <div class="col-lg-8 pad-mar-0">
+                              <p class="pad-mar-0 float-right font-family-reg font-size-14 text-color-orange">
+                                For any changes in the order, please contact <t t-esc="res_company.cust_care_phone"/>
+                              </p>
+                            </div>
+                          </t>
+                        </div>
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th>
+                                <!-- <label class="container-checkbox font-family-reg font-size-14 font-color-gray-1">
+                                  <input type="checkbox" class="select_order"/>
+                                  <span class="checkmark"></span>
+                                </label> -->
+                              </th>
+                              <th>Products</th>
+                              <th>Quantity</th>
+                              <th>Price</th>
+                                <th>Validity Date</th>
+                              <th class="text-center">Remove</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+	                          <t t-foreach="quotations" t-as="quotation">
+                          		
+		                       		<tr>
+		                              <td>
+		                                <label class="font-family-reg font-size-14 font-color-gray-1" style="cursor: pointer;">
+		                                  <!-- <input type="checkbox" class="select_order"/> -->
+		                                  <input type="radio" class="select_order" name="order" />
+		                                  <!-- <span class="checkmark"></span> -->
+		                                  <span id="order_id" t-esc="quotation.id" style="display:none;"></span>
+		                                </label>
+		                              </td>
+		                              <td>
+		                                <div class="table-product-img-view">
+		                                  <div class="row pad-mar-0">
+		                                    <div class="col-lg-12 pad-mar-0">
+		                                    	<!-- ship address -->
+		                                    		<div class="modal fade" id="shipModal" tabindex="-1" role="dialog" aria-labelledby="shipModalLabel" aria-hidden="true">
+				                                        <div class="modal-dialog" role="document">
+				                                                <div class="modal-content">
+				                                                    <div class="modal-header">
+				                                                        <h5 class="modal-title" id="exampleModalLabel">Shipping Address</h5>
+				                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				                                                            <span aria-hidden="true">
+				                                                                <![CDATA[&]]>times;
+				                                                            </span>
+				                                                        </button>
+				                                                    </div>
+				                                                    <div class="modal-body">
+				                                                       <address t-field="quotation.partner_shipping_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' />
+				                                                    
+		                                        					</div>
+		                                        					<div class="modal-footer">
+				                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				                                                    </div>
+                                        						</div>
+                                    						</div>
+	                                    			</div>
+		                                    	<!-- end -->
+		                                    	<!-- bill addrs -->
+		                                    		<div class="modal fade" id="billModal" tabindex="-1" role="dialog" aria-labelledby="billModalLabel" aria-hidden="true">
+				                                        <div class="modal-dialog" role="document">
+				                                                <div class="modal-content">
+				                                                    <div class="modal-header">
+				                                                        <h5 class="modal-title" id="exampleModalLabel">Billing Address</h5>
+				                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				                                                            <span aria-hidden="true">
+				                                                                <![CDATA[&]]>times;
+				
+				                                                            </span>
+				                                                        </button>
+				                                                    </div>
+				                                                    <div class="modal-body">
+				                                                       <address t-field="quotation.partner_invoice_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' />
+				                                                    
+		                                        					</div>
+		                                        					<div class="modal-footer">
+				                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				                                                    </div>
+                                        						</div>
+                                    						</div>
+	                                    			</div>
+		                                    	<!-- end -->
+		                                      <div class="float-left">
+		                                        <a
+                                                        t-att-href="'/shop/'+slug(quotation.order_line.mapped('product_id').mapped('product_tmpl_id')[0])"><img
+                                                      t-att-src="'data:image/png;base64,%s' % to_text(quotation.order_line.mapped('product_id').mapped('product_tmpl_id')[0].image_256)" t-att-alt="quotation.order_line.mapped('product_id').mapped('product_tmpl_id')[0].name"/>
+		                                        </a>
+                                              </div>
+		                                      <p class="pad-mar-0 font-family-bold font-size-12 text-color-gray-6"><t t-esc="quotation.name" /></p>
+		                                      <p class="pad-mar-0 font-family-reg font-size-14 text-color-block"><t t-esc="quotation.order_line.mapped('product_id').mapped('product_tmpl_id')[0].name" /></p>
+		                                      <p class="pad-mar-0 font-family-reg font-size-14 text-color-block"><span data-toggle="modal" data-target="#shipModal"><a href="#">Shipping Address</a></span><span data-toggle="modal" data-target="#billModal" style="padding-left:3px;"><a href="#">Billing Address</a></span></p>
+		                                    </div>
+		                                  </div>
+		                                </div>
+		                              </td>
+		                              <td class="font-family-bold font-size-14 text-color-block">
+                                        <span t-esc="sum(quotation.order_line.filtered(lambda x :x.product_id.type == 'product').mapped('product_uom_qty'))"/>
+                                        <span t-esc="quotation.order_line.mapped('product_id').mapped('product_tmpl_id')[0].uom_id.name"/>
+                                      </td>
+		                              <td class="font-family-black font-size-14 text-color-block">
+                                          <span t-field="quotation.amount_total"
+                                                t-options='{"widget": "monetary", "display_currency": quotation.company_id.currency_id}'/>
+                                        </td>
+                                        <td><t t-esc="quotation.validity_date"/></td>
+		                              <td class="trashIcon">
+		                                <i class="fa fa-trash pointer"/>
+		                              </td>
+		                            </tr>
+
+	                          </t>
+                          </tbody>
+                        </table>
+                        <!--  comment for future reference -->
+                        <!-- <div class="row pad-mar-0">
+                          <div class="col-lg-12 pad-mar-0">
+                            <div class="shipping-address product-info-heading">
+                              <p class="font-family-bold font-size-14 font-color-gray-1 pad-mar-0 mar-bot-10"><img src="/builderbay/static/src/images/mapicon.png"/>Shipping Address <span class="font-family-bold font-size-14 float-right"><i class="fa fa-pencil"></i> Edit Address</span></p>
+                              <p class="mar-0 text-color-block font-family-reg font-size-14 address-shipping"><t t-esc="ship_address" /></p>
+                              <p class="mar-0 text-color-blocks font-family-reg font-size-14 address-shipping">349/c, 1st floor, BK Guda Park, SR Nagar, Hyderabad - 500039</p>
+                            </div>
+                          </div>
+                        </div> -->
+                      </div>
+                    </div>
+                    <div class="col-lg-4 pad-mar-0">
+                      <div class="prices-view">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th class="font-family-bold font-size-14 text-color-white text-uppercase" colspan="2">
+                                Order Summary
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody id="checkout_orders">
+                          	
+                            <tr id="ord_detls">
+                              <td class="font-family-bold font-size-14 text-color-block border-left-table">
+                                <p class="pad-mar-0 mar-bot-5">Order Number</p>
+                                <p class="pad-mar-0 font-size-14 font-color-gray-7">Total Amount</p>
+                              </td>
+                              <td class="font-family-bold font-size-14 text-color-block border-right-table">
+                                <p class="text-right pad-mar-0 mar-bot-5">No Order</p>
+                                <p class="text-right pad-mar-0 font-size-14 font-color-gray-7">₹0.0</p>
+                              </td>
+                            </tr>
+                            <tr class="total-amount" id="chk_total_amount">
+                              <td class="font-family-bold font-size-14 text-color-block border-left-table">
+                                <p class="pad-mar-0 font-size-16 text-color-block">All Orders Total Amount</p>
+                              </td>
+                              <td class="font-family-bold font-size-14 text-color-block border-right-table">
+                                <p class="text-right pad-mar-0 font-size-16 text-color-block">₹<span id="chk_total">0.00</span></p>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div class="buttons-checkout">
+                          <div class="row pad-mar-0">
+                            <div class="col-lg-12 pad-mar-0">
+                              <input style="background-color:lightgrey;" type="button" disabled="disabled" name="" id="checkout_payment" value="Checkout" class="btn font-size-16 font-family-bold text-color-white btn-blue text-center"/>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </t>
+        </template>
+
+<!--  <template id="bs_payment" name="Shipment">-->
+<!--    <t t-call="website.layout">-->
+<!--      <div class="main-section">-->
+<!--        <div class="main-cart-view pad-left-right-20">-->
+<!--          <div class="row pad-mar-0">-->
+<!--            <div class="col-lg-8 pad-mar-0">-->
+<!--              <div class="products-view">-->
+<!--                <div class="row pad-mar-0 mar-top-10 mar-bot-10">-->
+<!--                  <div class="col-lg-12 pad-mar-0">-->
+<!--                    <h5 class="font-family-black font-size-16 text-color-block mar-0">Payment Information</h5>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--                <div class="row pad-mar-0">-->
+<!--                  <div class="col-lg-12 pad-mar-0">-->
+<!--                    <div class="user-select-payment" id="payment_method" t-if="(acquirers or tokens)">-->
+<!--                        <t t-call="payment.payment_tokens_list">-->
+<!--                            <t t-set="mode" t-value="'payment'"/>-->
+<!--                            <t t-set="submit_txt">Pay Now</t>-->
+<!--                            <t t-set="icon_right" t-value="1"/>-->
+<!--                            <t t-set="icon_class" t-value="'fa-chevron-right'"/>-->
+<!--                            <t t-set="submit_class" t-value="'btn btn-primary'"/>-->
+<!--                            <t t-set="pms" t-value="tokens"/>-->
+<!--                            <t t-set="form_action" t-value="'/shop/payment/token'"/>-->
+<!--                            <t t-set="prepare_tx_url" t-value="'/shop/payment/transaction/'"/>-->
+<!--                            <t t-set="partner_id" t-value="partner"/>-->
+
+<!--                            <t t-set="back_button_icon_class" t-value="'fa-chevron-left'"/>-->
+<!--                            <t t-set="back_button_txt">Return to Cart</t>-->
+<!--                            <t t-set="back_button_class" t-value="'btn btn-secondary'"/>-->
+<!--                            <t t-set="back_button_link" t-value="'/shop/cart'"/>-->
+<!--                        </t>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+
+
+
+<!--            <div class="col-lg-4 pad-mar-0">-->
+<!--              <div class="prices-view">-->
+<!--                <table class="table">-->
+<!--                  <thead>-->
+<!--                    <tr>-->
+<!--                      <th class="font-family-bold font-size-14 text-color-white text-uppercase" colspan="2">Order Summery</th>-->
+<!--                    </tr>-->
+<!--                  </thead>-->
+<!--                  <tbody>-->
+<!--                   <t t-foreach="order_details.get('orders')" t-as="quotation">-->
+<!--	                    <tr>-->
+<!--	                      <td class="font-family-bold font-size-14 text-color-block border-left-table">-->
+<!--	                        <p class="pad-mar-0 mar-bot-5">Order Number</p>-->
+<!--	                        <p class="pad-mar-0 font-size-14 font-color-gray-7">Total Amount</p>-->
+<!--	                      </td>-->
+<!--	                      <td class="font-family-bold font-size-14 text-color-block border-right-table">-->
+<!--	                        <p class="text-right pad-mar-0 mar-bot-5"><t t-esc="quotation.name" /></p>-->
+<!--	                        <p class="text-right pad-mar-0 font-size-14 font-color-gray-7">₹<t t-esc="quotation.amount_untaxed" /></p>-->
+<!--	                      </td>-->
+<!--	                    </tr>-->
+<!--                  </t>-->
+<!--                    <tr class="total-amount">-->
+<!--                      <td class="font-family-bold font-size-14 text-color-block border-left-table">-->
+<!--                        <p class="pad-mar-0 font-size-16 text-color-block">All Orders Total Amount</p>-->
+<!--                      </td>-->
+<!--                      <td class="font-family-bold font-size-14 text-color-block border-right-table">-->
+<!--                        <p class="text-right pad-mar-0 font-size-16 text-color-block">₹<t t-esc="amount_total" /></p>-->
+<!--                      </td>-->
+<!--                    </tr>-->
+<!--                  </tbody>-->
+<!--                </table>-->
+<!--&lt;!&ndash;                <div class="buttons-pay">&ndash;&gt;-->
+<!--&lt;!&ndash;                  <div class="row pad-mar-0">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="col-lg-12 pad-mar-0">&ndash;&gt;-->
+<!--&lt;!&ndash;                      <input type="button" name="" value="Paynow" class="font-size-16 font-family-bold text-color-white btn-blue text-center"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                  </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </t>-->
+<!--  </template>-->
+
+    <!-- Overridden - cart chekout -->
+    <template id="website_sale.payment" name="Payment">
+        <t t-call="website.layout">
+            <t t-set="additional_title">Shop - Select Payment Acquirer</t>
+            <t t-set="no_footer" t-value="1"/>
+
+            <div id="wrap">
+                <div class="container oe_website_sale py-2">
+                    <div class="row mt-4">
+                        <!--<div class='col-12'>
+                            <t t-call="website_sale.wizard_checkout">
+                                <t t-set="step" t-value="40" />
+                            </t>
+                        </div>-->
+                        <div class="col-12" t-if="errors">
+                            <t t-foreach="errors" t-as="error">
+                                <div class="alert alert-danger" t-if="error" role="alert">
+                                    <h4>
+                                        <t t-esc="error[0]" />
+                                    </h4>
+                                    <t t-esc="error[1]" />
+                                </div>
+                            </t>
+                        </div>
+                        <div class="col-12 col-xl-auto order-xl-2">
+                            <t t-call="website_sale.cart_summary"/>
+                        </div>
+                        <div class="col-12 col-xl order-xl-1 oe_cart">
+                            <div class="card">
+                                <div class="card-body" id="shipping_and_billing">
+                                    <!--<a class='float-right no-decoration' href='/shop/checkout'><i
+                                        class="fa fa-edit"/> Edit</a>-->
+                                    <t t-set="same_shipping" t-value="bool(order.partner_shipping_id==order.partner_id or only_services)" />
+                                    <div>
+                                        <b class="font-size-16 font-family-bold">Billing<t t-if="same_shipping and not only_services"> &amp; Shipping</t>: </b>
+                                        <span t-esc='order.partner_id' t-options="dict(widget='contact', fields=['address'], no_marker=True, separator=', ')" class="address-inline font-size-16 font-family-reg"/>
+                                    </div>
+                                    <div t-if="not same_shipping and not only_services" groups="sale.group_delivery_invoice_address">
+                                        <b class="font-size-16 font-family-bold">Shipping: </b>
+                                        <span t-esc='order.partner_shipping_id' t-options="dict(widget='contact', fields=['address'], no_marker=True, separator=', ')"  class="address-inline font-size-16 font-family-reg"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="oe_structure clearfix mt-3" id="oe_structure_website_sale_payment_1"/>
+
+                            <div id="payment_method" class="mt-3" t-if="(acquirers or tokens) and website_sale_order.amount_total">
+                                <h3 class="mb24 font-size-18 font-family-bold">Pay with </h3>
+                                <t t-call="payment.payment_tokens_list">
+                                    <t t-set="mode" t-value="'payment'"/>
+                                    <t t-set="submit_txt">Pay Now</t>
+                                    <t t-set="icon_right" t-value="1"/>
+                                    <t t-set="icon_class" t-value="'fa-chevron-right'"/>
+                                    <t t-set="submit_class" t-value="'btn btn-primary fontsize14 latobold'"/>
+                                    <t t-set="pms" t-value="tokens"/>
+                                    <t t-set="form_action" t-value="'/shop/payment/token'"/>
+                                    <t t-set="prepare_tx_url" t-value="'/shop/payment/transaction/'"/>
+                                    <t t-set="partner_id" t-value="partner"/>
+
+                                    <t t-set="back_button_icon_class" t-value="'fa-chevron-left'"/>
+                                    <t t-set="back_button_txt">Return to Cart</t>
+                                    <t t-set="back_button_class" t-value="'btn btn-outline-primary fontsize14 latobold'"/>
+                                    <t t-set="back_button_link" t-value="'/shop/cart'"/>
+                                </t>
+                            </div>
+
+                            <div t-if="not acquirers" class="mt-2">
+                                <a role="button" class="btn-link"
+                                    groups="base.group_system"
+                                    t-attf-href="/web#action=#{payment_action_id}">
+                                        <i class="fa fa-arrow-right"></i> Add payment acquirers
+                                </a>
+                            </div>
+                            <div class="js_payment mt-3" t-if="not website_sale_order.amount_total" id="payment_method">
+                                <form target="_self" action="/shop/payment/validate" method="post" class="float-right">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                                    <a role="button" class="btn btn-primary a-submit" href="#">
+                                        <span t-if="order.amount_total &gt; 0">Pay Now <span class="fa fa-chevron-right"></span></span>
+                                        <span t-if="order.amount_total == 0">Confirm Order <span class="fa fa-chevron-right"></span></span>
+                                    </a>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="oe_structure" id="oe_structure_website_sale_payment_2"/>
+            </div>
+        </t>
+    </template>
+
+     <template id="website_sale.reduction_code" inherit_id="website_sale.total" customize_show="True" name="Promo Code">
+        <xpath expr="//div[@id='cart_total']//table/tr[last()]" position="after">
+<!--            <tr t-if="not hide_coupon">-->
+<!--                <td colspan="3" class="text-center text-xl-right border-0">-->
+<!--                <span class=''>-->
+<!--                    <t t-set='force_coupon' t-value="website_sale_order.pricelist_id.code or request.params.get('code_not_available')"/>-->
+<!--                    <t t-if="not force_coupon">-->
+<!--                        <a href="#" class="show_coupon">I have a promo code</a>-->
+<!--                    </t>-->
+<!--                    <div t-attf-class="coupon_form #{not force_coupon and 'd-none'}">-->
+<!--                        <t t-call="website_sale.coupon_form"/>-->
+<!--                    </div>-->
+<!--                </span>-->
+<!--                </td>-->
+<!--            </tr>-->
+        </xpath>
+    </template>
+
+    <!-- Overridden -->
+    <template id="website_sale.cart_summary" name="Cart right column">
+        <div class="card">
+            <div class="card-body p-xl-0">
+                <div class="toggle_summary d-xl-none">
+                    <b>Your order: </b> <span t-field="website_sale_order.amount_total" t-options='{"widget": "monetary", "display_currency": website_sale_order.pricelist_id.currency_id}'/>
+                    <span class='fa fa-chevron-down fa-border float-right' role="img" aria-label="Details" title="Details"></span>
+                </div>
+                <div t-if="not website_sale_order or not website_sale_order.website_order_line" class="alert alert-info">
+                    Your cart is empty!
+                </div>
+                <div class="toggle_summary_div d-none d-xl-block">
+                    <table class="table table-striped table-sm" id="cart_products" t-if="website_sale_order and website_sale_order.website_order_line">
+                        <thead>
+                            <tr>
+                                <th class="border-top-0 td-img table-title-1 latobold fontsize16">Product</th>
+                                <th class="border-top-0 table-title-1 latobold fontsize16"></th>
+                                <th class="border-top-0 td-qty table-title-1 latobold fontsize16">Quantity</th>
+                                <th class="border-top-0 text-center td-price table-title-1 latobold fontsize16">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="website_sale_order.website_order_line" t-as="line">
+                                <td class='' colspan="2" t-if="not line.product_id.product_tmpl_id"></td>
+                                <td class='td-img text-center' t-if="line.product_id.product_tmpl_id">
+                                    <span class="font-color-gray-7 latobold fontsize16" t-field="line.product_id.image_128" t-options="{'widget': 'image', 'qweb_img_responsive': False, 'class': 'rounded o_image_64_max'}" />
+                                </td>
+                                <td class='td-product_name' t-if="line.product_id.product_tmpl_id">
+                                    <div>
+                                        <strong t-field="line.name_short" class="latobold fontsize16 font-color-gray-7"/>
+                                    </div>
+                                </td>
+                                <td class='td-qty'>
+                                    <div t-esc="line.product_uom_qty" class="latobold fontsize16 font-color-gray-7"/>
+                                </td>
+                                <td class="text-center td-price">
+                                    <span class="latobold fontsize16 font-color-gray-7" t-field="line.price_reduce_taxexcl" style="white-space: nowrap;" t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}" groups="account.group_show_line_subtotals_tax_excluded" />
+                                    <span class="latobold fontsize16 font-color-gray-7" t-field="line.price_reduce_taxinc" style="white-space: nowrap;" t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}" groups="account.group_show_line_subtotals_tax_included" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <t t-call="website_sale.total">
+                        <t t-set='redirect' t-value="redirect or '/shop/payment'"></t>
+                    </t>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="website_sale.total">
+        <div id="cart_total" t-att-class="extra_class or ''" t-if="website_sale_order and website_sale_order.website_order_line">
+            <table class="table">
+                  <tr id="empty">
+                      <t t-if='not no_rowspan'><td rowspan="10" class="border-0"/></t>
+                      <td class="col-md-2 col-3 border-0"></td>
+                      <td class="col-md-2 col-3 border-0" ></td>
+                  </tr>
+                  <tr id="order_total_untaxed">
+                      <td class="text-right border-0 latobold">Subtotal:</td>
+                      <td class="text-xl-right border-0" >
+                          <span t-field="website_sale_order.amount_untaxed" class="monetary_field latobold" style="white-space: nowrap;" t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}"/>
+                      </td>
+                  </tr>
+                  <tr id="order_total_taxes">
+                      <td class="text-right border-0 latobold">Taxes:</td>
+                      <td class="text-xl-right border-0">
+                           <span t-field="website_sale_order.amount_tax" class="monetary_field latobold" style="white-space: nowrap;" t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}" />
+                      </td>
+                  </tr>
+                  <tr id="order_total">
+                      <td class="text-right"><strong class="latobold fontsize20">Total:</strong></td>
+                      <td class="text-xl-right">
+                          <strong t-field="website_sale_order.amount_total" class="monetary_field latobold fontsize20"
+                              t-options='{"widget": "monetary", "display_currency": website_sale_order.pricelist_id.currency_id}'/>
+                      </td>
+                  </tr>
+            </table>
+        </div>
+    </template>
+
+
+        <template id="website_sale.confirmation">
+        <t t-call="website.layout">
+            <t t-set="additional_title">Shop - Confirmed</t>
+            <div id="wrap">
+                <div class="container oe_website_sale py-2">
+                    <h1 class="order-number"><span>Order</span> <em t-field="order.name" /> <t t-if="order.state == 'sale'"><span>Confirmed</span></t></h1>
+
+                    <div class="row">
+                        <div class="col-12 col-xl">
+                            <div class="oe_cart">
+                                <t t-set="payment_tx_id" t-value="order.get_portal_last_transaction()"/>
+                                <t t-if="payment_tx_id.state == 'done'">
+                                    <div class="thanks_msg">
+                                        <h2>Thank you for your order.
+                                            <a role="button" class="btn btn-primary d-none d-md-inline-block" href="/shop/print" target="_blank" aria-label="Print" title="Print"><i class="fa fa-print"></i> Print</a>
+                                        </h2>
+                                    </div>
+                                </t>
+                                <t t-if="request.env['res.users']._get_signup_invitation_scope() == 'b2c' and request.website.is_public_user()">
+                                    <p class="alert alert-info mt-3" role="status">
+                                        <a role="button" t-att-href='order.partner_id.signup_prepare() and order.partner_id.with_context(relative_url=True).signup_url' class='btn btn-primary'>Sign Up</a>
+                                         to follow your order.
+                                    </p>
+                                </t>
+                                <div class="oe_structure clearfix mt-3" id="oe_structure_website_sale_confirmation_1"/>
+                                <h3 class="text-left mt-3">
+                                    <strong class="latobold">Payment Information:</strong>
+                                </h3>
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="2" class="font-family-reg">
+                                                <t t-esc="order.get_portal_last_transaction().acquirer_id.name" />
+                                            </td>
+                                            <td class="text-right" width="100">
+                                                <strong class="latobold">Total:</strong>
+                                            </td>
+                                            <td class="text-right" width="100">
+                                                <strong class="latobold" t-field="order.amount_total" t-options="{'widget': 'monetary', 'display_currency': order.pricelist_id.currency_id}" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <t t-call="website_sale.payment_confirmation_status"/>
+                                <div class="card mt-3">
+                                  <div class="card-body">
+                                    <t t-set="same_shipping" t-value="bool(order.partner_shipping_id==order.partner_id or only_services)" />
+                                    <div><b>Billing <t t-if="same_shipping and not only_services"> &amp; Shipping</t>: </b><span t-esc='order.partner_id' t-options="dict(widget='contact', fields=['address'], no_marker=True, separator=', ')" class="address-inline"/></div>
+                                    <div t-if="not same_shipping and not only_services" groups="sale.group_delivery_invoice_address"><b>Shipping: </b><span t-esc='order.partner_shipping_id' t-options="dict(widget='contact', fields=['address'], no_marker=True, separator=', ')"  class="address-inline"/></div>
+                                  </div>
+                                </div>
+                                <div class="oe_structure mt-3" id="oe_structure_website_sale_confirmation_2"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-auto">
+                            <t t-set="website_sale_order" t-value="order"/>
+                            <t t-call="website_sale.cart_summary">
+                                <t t-set="hide_coupon" t-value="1"/>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+                <div class="oe_structure" id="oe_structure_website_sale_confirmation_3"/>
+            </div>
+        </t>
+    </template>
+
+
+</odoo>

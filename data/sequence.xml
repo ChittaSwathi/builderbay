@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- builderbay Customer Sequence -->
+        <record id="bs_partner_code_seq" model="ir.sequence"><!-- B2B-->
+            <field name="name">builderbay Partner Code</field>
+            <field name="code">bs.partner.code</field>
+            <field name="prefix">BSC</field>
+            <field eval="11" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field eval="False" name="company_id"/>
+            <field name="padding">5</field>
+        </record>
+        <record id="bs_b2c_partner_seq" model="ir.sequence">
+            <field name="name">builderbay B2C Partner Code</field>
+            <field name="code">bs.b2c.code</field>
+            <field name="prefix">BSCC</field>
+            <field eval="1" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field eval="False" name="company_id"/>
+            <field name="padding">5</field>
+        </record>
+        <record id="bs_vendor_code_seq" model="ir.sequence"><!--TODO: Registered. Unregistered-->
+            <field name="name">builderbay Vendor Code</field>
+            <field name="code">bs.vendor.code</field>
+            <field name="prefix">BSV</field>
+            <field eval="1" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field eval="False" name="company_id"/>
+            <field name="padding">5</field>
+        </record>
+
+        <!-- Click & upload -->
+        <record id="bs_click_upload_seq" model="ir.sequence">
+            <field name="name">builderbay Click &amp; Upload Code</field>
+            <field name="code">bs.click.upload.code</field>
+            <field name="prefix">BSCP</field>
+            <field eval="1" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field name="padding">5</field>
+        </record>
+
+        <!-- Price Enquiry -->
+         <record id="bs_price_enq_seq" model="ir.sequence">
+            <field name="name">builderbay Price Enquiry Code</field>
+            <field name="code">bs.price.enq.code</field>
+            <field name="prefix">BSPE</field>
+            <field eval="1" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field name="padding">5</field>
+        </record>
+		<!--  product sku seq -->
+		<record id="bs_product_seq" model="ir.sequence">
+            <field name="name">builderbay Product SKU Code</field>
+            <field name="code">product.sku.code</field>
+            <field name="prefix">BS-</field>
+            <field eval="1" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field eval="False" name="company_id"/>
+            <field name="padding">7</field>
+        </record>
+
+        <!-- BS notifications -->
+        <record id="bs_notify_seq" model="ir.sequence">
+            <field name="name">builderbay Notifications Code</field>
+            <field name="code">bs.notification.code</field>
+            <field name="prefix">BSN-</field>
+            <field eval="1" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field eval="False" name="company_id"/>
+        </record>
+    </data>
+</odoo>

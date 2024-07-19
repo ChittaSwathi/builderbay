@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="bs_web_assets" inherit_id="web.assets_common">
+         <xpath expr="//script[contains(@src, '/web/static/lib/popper/popper.js')]" position="after">
+            <script type="text/javascript" src="/builderbay/static/src/js/homepage.js"/>
+        </xpath>
+    </template>
+    <!-- To fix cart 'json <' issue-->
+    <template id="bs_wishlist_remove" inherit_id="website_sale_wishlist.assets_frontend"
+    name="Wishlist assets frontend">
+        <xpath expr="script[last()]" position="replace"/>
+    </template>
+
+    <template id="web_assets_frontend" inherit_id="web.assets_frontend" name="Assets">
+        <xpath expr="//link[last()]" position="after">
+
+            <link rel="stylesheet" type="text/scss" href="/builderbay/static/src/scss/global.scss"/>
+            <link rel="stylesheet" type="text/scss" href="/builderbay/static/src/scss/generic.scss"/>
+            <link rel="stylesheet" type="text/scss" href="/builderbay/static/src/scss/pdp.scss"/>
+            <link rel="stylesheet" type="text/scss" href="/builderbay/static/src/scss/cart.scss"/>
+            <link rel="stylesheet" type="text/scss" href="/builderbay/static/src/scss/payment.scss"/>
+            <link rel="stylesheet" type="text/scss" href="/builderbay/static/src/scss/signup_login.scss"/>
+            <link rel="stylesheet" type="text/scss" href="/builderbay/static/src/scss/homepage.scss"/>
+            <link rel="stylesheet" type="text/scss" href="/builderbay/static/src/scss/all_categs.scss"/>
+            <link rel="stylesheet" type="text/scss" href="/builderbay/static/src/scss/my_account.scss"/>
+            <link rel="stylesheet" type="text/scss" href="/builderbay/static/src/scss/plp.scss"/>
+            <link rel="stylesheet" type="text/scss" href="/builderbay/static/src/scss/vendor1.css"/><!--TODO:remove vendor.scss and convert css to scss-->
+            <link rel="stylesheet" type="text/css" href="/builderbay/static/src/scss/media_queries.css"/>
+            <link rel="stylesheet" type="text/css" href="/builderbay/static/src/scss/multi_select.css"/>
+            <link rel="stylesheet" type="text/scss" href="/builderbay/static/src/scss/profile.scss"/><!--Profile pages -->
+            <link rel="stylesheet" type="text/scss" href="/builderbay/static/src/scss/slick.css"/>
+
+            <script type="text/javascript" src="/builderbay/static/src/js/pdp.js"/>
+            <script type="text/javascript" src="/builderbay/static/src/js/generic.js"/>
+            <script type="text/javascript" src="/builderbay/static/src/js/payment.js"/>
+            <script type="text/javascript" src="/builderbay/static/src/js/sale.js"/>
+            <script type="text/javascript" src="/builderbay/static/src/js/signup_login.js"/>
+            <!--<script type="text/javascript" src="/builderbay/static/src/js/homepage.js"/>-->
+            <script type="text/javascript" src="/builderbay/static/src/js/rfq.js"/>
+            <script type="text/javascript" src="/builderbay/static/src/js/ledger.js"/>
+            <script type="text/javascript" src="/builderbay/static/src/js/address.js"/>
+            <script type="text/javascript" src="/builderbay/static/src/js/security.js"/>
+            <script type="text/javascript" src="/builderbay/static/src/js/my_order.js"/>
+            <script type="text/javascript" src="/builderbay/static/src/js/portal.js"/>
+            <script type="text/javascript" src="/builderbay/static/src/js/wishlist.js"/>
+            <script type="text/javascript" src="/builderbay/static/src/js/bs_portal_sidebar.js"/>
+
+            <!--Start of Tawk.to Script-->
+            <script type="text/javascript">
+                var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+                (function(){
+                var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+                s1.async=true;
+                s1.src='https://embed.tawk.to/5f70406e4704467e89f2a21a/default';
+                s1.charset='UTF-8';
+                s1.setAttribute('crossorigin','*');
+                s0.parentNode.insertBefore(s1,s0);
+                })();
+            </script>
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+            <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-R0LP0N9BYC"></script>
+            <script>
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+
+              gtag('config', 'G-R0LP0N9BYC');
+            </script>
+
+            <!-- OTP keyup -->
+            <script>
+               function movetoNext(current, nextFieldID, event, prevID) {
+                  if (current.value.length >= current.maxLength) {
+                    if(nextFieldID != '0'){
+                        if(nextFieldID != 'empty'){
+                            document.getElementById(nextFieldID).focus();
+                        }
+                    }
+                  }
+                    if (event.keyCode == 8 || event.keyCode == 46) {
+                        if(prevID != 'empty'){
+                            document.getElementById(prevID).focus();
+                        }
+                    }
+                }
+            </script>
+
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+            <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-2YF4VLC0PN"/>
+            <script>
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+
+              gtag('config', 'G-2YF4VLC0PN');
+            </script>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"/>
+
+            <script type="text/javascript" src="/builderbay/static/src/js/slick.js"/>
+            <script type="text/javascript" src="/builderbay/static/src/js/chosen_min.js"/>
+            <script type="text/javascript" src="/builderbay/static/src/js/sweetalert.min.js"/>
+            <link rel="stylesheet" type="text/css" href="/builderbay/static/src/scss/chosen_min.css"/>
+            <script>
+                $(".chosen").chosen();
+            </script>
+            <script>
+                $(document).ready(function(){
+                    $('.autoplay').slick({
+                        slidesToShow: 8,
+                        slidesToScroll: 1,
+                        swipeToSlide: true,
+                        autoplay: true,
+                        autoplaySpeed: 2000,
+                        dots: false,
+                        prevArrow: false,
+                        nextArrow: false,
+                        responsive: [
+                            {
+                              breakpoint: 1124,
+                              settings: {
+                                slidesToShow: 5,
+                                slidesToScroll: 5,
+                              }
+                            },
+                            {
+                              breakpoint: 1024,
+                              settings: {
+                                slidesToShow: 3,
+                                slidesToScroll: 3,
+                              }
+                            },
+                            {
+                              breakpoint: 600,
+                              settings: {
+                                slidesToShow: 2,
+                                slidesToScroll: 2
+                              }
+                            },
+                            {
+                              breakpoint: 480,
+                              settings: {
+                                slidesToShow: 2,
+                                slidesToScroll: 1
+                              }
+                            }
+                        ]
+                    });
+                });
+            </script>
+
+        </xpath>
+    </template>
+
+
+</odoo>

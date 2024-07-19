@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="banner_image_form" model="ir.ui.view">
+            <field name="name">banner.image.form</field>
+            <field name="model">banner.image</field>
+            <field name="arch" type="xml">
+                <form string="Banners">
+                    <div class="row o_website_sale_image_modal">
+                        <div class="col-md-6 col-xl-5">
+                            <label for="name"/>
+                            <h2><field name="name" placeholder="Banner Content"/></h2>
+                            <label for="color"/>
+                            <h2><field name="color" placeholder="Color Hexcode"/></h2>
+                            <label for="redirecting_url"/>
+                            <h3><field name="redirecting_url"/> </h3>
+                            <label for="s3_url"/>
+                            <field name="s3_url"/>
+                            <label for="banner_content"/>
+                            <field name="banner_content"/>
+                        </div>
+                        <div class="col-md-6 col-xl-7 text-center o_website_sale_image_modal_container">
+                            <div class="row">
+                                <div class="col">
+                                    <field name="image_1920" widget="image" required="1"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="banner_image_kanban" model="ir.ui.view">
+            <field name="name">banner.image.kanban</field>
+            <field name="model">banner.image</field>
+            <field name="arch" type="xml">
+            <kanban string="Banners">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="image_1920"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="card oe_kanban_global_click p-0">
+                            <div class="o_squared_image">
+                                <img class="card-img-top" t-att-src="kanban_image('banner.image', 'image_1920', record.id.raw_value)" t-att-alt="record.name.value"/>
+                            </div>
+                            <div class="card-body p-0">
+                                <h4 class="card-title p-2 m-0 bg-200">
+                                    <small><field name="name"/></small>
+                                </h4>
+                            </div>
+                            <!-- below 100 Kb: good -->
+                            <t t-if="record.image_1920.raw_value.length &lt; 100*1000">
+                                <t t-set="size_status" t-value="'badge-success'"/>
+                                <t t-set="message">Acceptable file size</t>
+                            </t>
+                            <!-- below 1000 Kb: decent -->
+                            <t t-elif="record.image_1920.raw_value.length &lt; 1000*1000">
+                                <t t-set="size_status" t-value="'badge-warning'" />
+                                <t t-set="message">Huge file size. The image should be optimized/reduced.</t>
+                            </t>
+                            <!-- above 1000 Kb: bad -->
+                            <t t-else="1">
+                                <t t-set="size_status" t-value="'badge-danger'"/>
+                                <t t-set="message">Optimization required! Reduce the image size or increase your compression settings.</t>
+                            </t>
+                            <span t-attf-class="badge #{size_status} o_product_image_size" t-esc="record.image_1920.value" t-att-title="message"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+            </field>
+        </record>
+
+        <!-- Inherited : For eCommerce-->
+        <record id="res_company_form" model="ir.ui.view">
+            <field name="name">res.company.form.inherit</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[last()]" position="after">
+                    <group col="4" string="GST API">
+                        <field name="gst_url"/>
+                        <field name="gst_agent_key"/>
+                        <field name="gst_pre_prod_key"/>
+                        <field name="gst_prod_key"/>
+                    </group>
+                    <page name="bank_details" string="Bank Address">
+                        <group>
+                            <group>
+                                <field name="corporate_code"/>
+                                <field name="bank_id"/>
+                                <field name="ifsc_code"/>
+                                <field name="bank_address"/>
+                            </group>
+                        </group>
+                    </page>
+                    <page name="sms_api_details" string="SMS">
+                        <group>
+                            <group>
+                                <field name="sms_username"/>
+                                <field name="sms_password"/>
+                            </group>
+                            <group>
+                                <field name="sms_senderid"/>
+                                <field name="sms_apikey"/>
+                            </group>
+                            <field name="sms_template_ids">
+                                <tree editable="bottom">
+                                    <field name="name" required="1"/>
+                                    <field name="content"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                    <page name="others" string="Others">
+                        <group string="Customer Service" col="4">
+                            <field name="cust_care_phone" required="1"/>
+                            <field name="cust_care_email" required="1"/>
+                            <field name="old_address_ids">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="date_from"/>
+                                    <field name="date_to"/>
+                                </tree>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <field name="name" required="1"/>
+                                            <field name="address" required="1"/>
+                                            <field name="date_from" required="1"/>
+                                            <field name="date_to" required="1"/>
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
+
+

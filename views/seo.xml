@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <menuitem id="website.menu_website_global_configuration" parent="website.menu_website_configuration"
+            sequence="100" name="Configuration" groups="base.group_system,builderbay.group_seo"/>
+        <menuitem name="Pages"
+            id="website.menu_website_pages_list"
+            action="website.action_website_pages_list"
+            parent="website.menu_website_global_configuration"
+            sequence="30" groups="builderbay.group_seo"
+            />
+
+        <menuitem name="Menus"
+            id="website.menu_website_menu_list"
+            action="website.action_website_menu"
+            parent="website.menu_website_global_configuration"
+            sequence="45"
+            groups="base.group_no_one,builderbay.group_seo"/>
+        <menuitem id="website_sale.menu_ecommerce_payment_acquirers"
+            action="payment.action_payment_acquirer"
+            parent="website_sale.menu_ecommerce_settings" name="Payment Acquirers"
+            groups="base.group_system"/>
+
+
+        <record id="bs_homepage_tree_id" model="ir.ui.view">
+            <field name="name">bs.website.homepage.tree</field>
+            <field name="model">bs.homepage</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="website_id"/>
+                </tree>
+            </field>
+        </record>
+        <record id="bs_homepage_form_id" model="ir.ui.view">
+            <field name="name">bs.website.homepage.form</field>
+            <field name="model">bs.homepage</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="website_id" required="1"/>
+                            <field name="company_id" required="1"/>
+                        </group>
+                        <notebook>
+                            <page name="homepage" string="Homepage">
+                               <field name="banner_ids" class="o_website_sale_image_list"
+                                       mode="kanban" options="{'create_text':'Add a Media'}" nolabel="1"/>
+                                
+                                <group>
+                                    <field name="top_category_ids">
+                                        <tree editable="bottom">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="category_id" required="1" />
+                                            <field name="label"/>
+                                            <field name="s3_url"/>
+                                            <field name="image" widget="image"/>
+                                        </tree>
+                                    </field>
+                                    <field name="hot_deals_label"/>
+                                    <field name="hot_deal_ids">
+                                        <tree editable="bottom">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="product_id" required="1" />
+                                            <field name="label"/>
+                                            <field name="s3_url"/>
+                                            <field name="image" widget="image"/>
+                                        </tree>
+                                    </field>
+                                    <field name="best_selling_label"/>
+                                    <field name="best_selling_ids">
+                                        <tree editable="bottom">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="product_id" required="1" />
+                                            <field name="label"/>
+                                            <field name="s3_url"/>
+                                            <field name="image" widget="image"/>
+                                        </tree>
+                                    </field>
+                                    <field name="cement_brand_label"/>
+                                    <field name="cement_brand_ids">
+                                        <tree editable="bottom">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="brand_id" required="1" />
+                                            <field name="label"/>
+                                            <field name="s3_url"/>
+                                            <field name="image" widget="image"/>
+                                        </tree>
+                                    </field>
+                                    <field name="safety_category_label"/>
+                                    <field name="safety_category_ids">
+                                        <tree editable="bottom">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="category_id" required="1" />
+                                            <field name="label"/>
+                                            <field name="s3_url"/>
+                                            <field name="image" widget="image"/>
+                                        </tree>
+                                    </field>
+                                    <field name="safety_brand_label"/>
+                                    <field name="safety_brand_ids">
+                                        <tree editable="bottom">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="brand_id" required="1" />
+                                            <field name="label"/>
+                                            <field name="s3_url"/>
+                                            <field name="image" widget="image"/>
+                                        </tree>
+                                    </field>
+                                    <field name="trending_product_label"/>
+                                    <field name="trending_product_ids">
+                                        <tree editable="bottom">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="product_id" required="1" />
+                                            <field name="label"/>
+                                            <field name="s3_url"/>
+                                            <field name="image" widget="image"/>
+                                        </tree>
+                                    </field>
+                                    <field name="steel_brand_label"/>
+                                    <field name="steel_brand_ids">
+                                        <tree editable="bottom">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="brand_id" required="1" />
+                                            <field name="label"/>
+                                            <field name="s3_url"/>
+                                            <field name="image" widget="image"/>
+                                        </tree>
+                                    </field>
+                                    <field name="top_blocks_label"/>
+                                     <field name="top_block_ids">
+                                        <tree editable="bottom">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="product_id" required="1" />
+                                            <field name="label"/>
+                                            <field name="s3_url"/>
+                                            <field name="image" widget="image"/>
+                                        </tree>
+                                    </field>
+                                    <field name="block_brand_label"/>
+                                     <field name="block_brand_ids">
+                                        <tree editable="bottom">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="brand_id" required="1" />
+                                            <field name="label"/>
+                                            <field name="s3_url"/>
+                                            <field name="image" widget="image"/>
+                                        </tree>
+                                    </field>
+                                    <field name="our_seller_ids">
+                                        <tree editable="bottom">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="partner_id" required="1" domain="[('supplier_rank','>',0)]"/>
+                                        </tree>
+                                    </field>
+                                    <field name="our_brand_ids">
+                                        <tree editable="bottom">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="brand_id" required="1" domain="[('attribute_id', '=', %(builderbay.brand_attribute)d)]"/>
+                                        </tree>
+                                    </field>
+                                    <field name="client_review_ids">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="client_id" required="1"/>
+                                        <field name="name" required="1"/>
+                                        <field name="review" required="1"/>
+                                    </tree>
+                                </field>
+                                </group>
+                            </page>
+                            <page name="search" string="Header Search">
+                                <field name="header_search_ids">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle" />
+                                        <field name="name"/>
+                                        <field name="categ_ids" widget="many2many_tags"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page name="links" string="Footer Links">
+                                <label for="footer_link_ids" string="Best Selling Links"/>
+                                <field name="footer_link_ids">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="page_url"/>
+                                    </tree>
+                                    <form>
+                                        <group>
+                                            <field name="name" required="1"/>
+                                            <field name="page_url" />
+                                            <field name="link_ids" required="1">
+                                                <tree editable="bottom">
+                                                    <field name="sequence" widget="handle"/>
+                                                    <field name="name" required="1"/>
+                                                    <field name="page_url"/>
+                                                </tree>
+                                            </field>
+                                        </group>
+                                    </form>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="bs_homepage_action" model="ir.actions.act_window">
+            <field name="name">Homepage</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">bs.homepage</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="builderbay.bs_homepage_tree_id"/>
+        </record>
+        <menuitem id="bs_homepage_menu" action="builderbay.bs_homepage_action" parent="website.menu_dashboard"
+            name="Homepage" />
+
+        <!-- SEO product view -->
+        <record id="seo_product_template_tree" model="ir.ui.view">
+            <field name="name">seo.product.template.treeview</field>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <tree create="false" delete="false">
+                    <field name="name"/>
+                    <field name="responsible_id"/>
+                </tree>
+            </field>
+        </record>
+        <record id="seo_product_template_form" model="ir.ui.view">
+            <field name="name">seo.product.template.formview</field>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <form create="false" delete="false">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <field name="is_published" widget="website_redirect_button"
+                                   attrs="{'invisible': [('sale_ok','=',False)]}"/>
+
+                            <button name="%(builderbay.seo_product_product_action)d" type="action"
+                                icon="fa-sitemap" class="oe_stat_button"
+                                attrs="{'invisible': [('product_variant_count', '&lt;=', 1)]}"
+                                groups="product.group_product_variant">
+                                <field string="Variants" name="product_variant_count" widget="statinfo" />
+                            </button>
+                        </div>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="type" readonly="1"/>
+                            <field name="public_categ_ids" widget="many2many_tags" readonly="1"/>
+                            <field name="responsible_id" readonly="1"/>
+                            <field name="sale_ok" invisible="1"/>
+                        </group>
+                        <notebook>
+                            <page readonly="1" string="General Info">
+                                <group>
+                                    <group>
+                                        <field name="l10n_in_hsn_code" readonly="1"/>
+                                        <field name="moq" readonly="1"/>
+                                        <field name="is_bulk_cement" readonly="1"/>
+                                        <field name="show_adds" readonly="1"/>
+                                        <field name="customer_type" readonly="1"/>
+                                    </group>
+                                    <group>
+                                        <field name="taxes_id" widget="many2many_tags" readonly="1"/>
+                                        <field name="uom_id" readonly="1"/>
+                                        <field name="uom_po_id" readonly="1"/>
+                                        <field name="conv_uom_ids" widget="many2many_tags" readonly="1"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page readonly="1" string="Variants">
+                                <field name="attribute_line_ids" readonly="1"/>
+                            </page>
+                            <page name="description" string="Description">
+                                <field name="website_description"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="seo_product_template_action" model="ir.actions.act_window">
+            <field name="name">Products</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.template</field>
+            <field name="view_mode">tree,form</field>
+             <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('builderbay.seo_product_template_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('builderbay.seo_product_template_form')})]"/>
+        </record>
+        <record id="seo_product_product_tree" model="ir.ui.view">
+            <field name="name">seo.product.product.treeview</field>
+            <field name="model">product.product</field>
+            <field name="arch" type="xml">
+                <tree create="false" delete="false">
+                    <field name="default_code"/>
+                    <field name="name"/>
+                    <field name="responsible_id"/>
+                    <field name="product_template_attribute_value_ids" widget="many2many_tags"/>
+                    <field name="uom_id"/>
+                </tree>
+            </field>
+        </record>
+        <record id="seo_product_product_form" model="ir.ui.view">
+            <field name="name">seo.product.product.formview</field>
+            <field name="model">product.product</field>
+            <field name="arch" type="xml">
+                <form create="false" delete="false">
+                    <sheet>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="type" readonly="1"/>
+                            <field name="default_code"/>
+                            <field name="product_template_attribute_value_ids" widget="many2many_tags" readonly="1"/>
+                            <field name="responsible_id" readonly="1"/>
+                        </group>
+                        <notebook>
+                            <page readonly="1" string="General Info">
+                                <group>
+                                    <group>
+                                        <field name="l10n_in_hsn_code" readonly="1"/>
+                                        <field name="moq" readonly="1"/>
+                                        <field name="is_bulk_cement" readonly="1"/>
+                                        <field name="show_adds" readonly="1"/>
+                                        <field name="customer_type" readonly="1"/>
+                                    </group>
+                                    <group>
+                                        <field name="taxes_id" widget="many2many_tags" readonly="1"/>
+                                        <field name="uom_id" readonly="1"/>
+                                        <field name="uom_po_id" readonly="1"/>
+                                        <field name="conv_uom_ids" widget="many2many_tags" readonly="1"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page readonly="1" string="Variants">
+                                <field name="attribute_line_ids" readonly="1"/>
+                            </page>
+                            <page name="description" string="Description">
+                                <field name="website_description"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="seo_product_product_action" model="ir.actions.act_window">
+            <field name="name">Product Variants</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.product</field>
+            <field name="view_mode">tree,form</field>
+             <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('builderbay.seo_product_product_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('builderbay.seo_product_product_form')})]"/>
+        </record>
+        <menuitem id="seo_product_menu"  name="Products" parent="website.menu_website_configuration"
+                  groups="builderbay.group_seo"/>
+        <menuitem id="seo_prod_temp_menu" name="Products" action="builderbay.seo_product_template_action"
+                  parent="builderbay.seo_product_menu" sequence="1"/>
+        <menuitem id="seo_prod_prod_menu" name="Product Variants" action="builderbay.seo_product_product_action"
+                  parent="builderbay.seo_product_menu" sequence="2"/>
+
+        <!-- SEO ecomm categ view -->
+        <record id="seo_ecomm_categ_tree" model="ir.ui.view">
+            <field name="name">seo.ecomm.categ.treeview</field>
+            <field name="model">product.public.category</field>
+            <field name="arch" type="xml">
+                <tree create="false" delete="false" >
+                    <field name="name"/>
+                    <field name="parent_id"/>
+                    <field name="customer_type"/>
+                </tree>
+            </field>
+        </record>
+        <record id="seo_ecomm_categ_form" model="ir.ui.view">
+            <field name="name">seo.ecomm.categ.formview</field>
+            <field name="model">product.public.category</field>
+            <field name="arch" type="xml">
+                <form create="false" delete="false">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" readonly="1"/>
+                                <field name="parent_id" readonly="1"/>
+                                <field name="megamenu" readonly="1"/>
+                                <field name="customer_type" readonly="1"/>
+                                <field name="l2_view" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="top_brand_ids" widget="many2many_tags" readonly="1"/>
+                                <field name="top_vendor_ids" widget="many2many_tags" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="description" string="Products Description">
+                                <field name="products_description"/>
+                            </page>
+                            <page name="detailed_info" string="Category Information">
+                                <field name="detailed_info"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="seo_ecomm_categ_action" model="ir.actions.act_window">
+            <field name="name">eCommerce Categories</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.public.category</field>
+            <field name="view_mode">tree,form</field>
+             <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('builderbay.seo_ecomm_categ_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('builderbay.seo_ecomm_categ_form')})]"/>
+        </record>
+        <menuitem id="seo_ecomm_categ_menu"  name="eCommerce Categories"
+                  parent="website.menu_website_configuration"
+                  groups="builderbay.group_seo" action="builderbay.seo_ecomm_categ_action"
+        />
+
+        <!-- BLOGs seo-->
+        <record id="bs_seo_blog_form" model="ir.ui.view">
+            <field name="name">bs.blog.post.form</field>
+            <field name="model">blog.post</field>
+            <field name="inherit_id" ref="website_blog.view_blog_post_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[@name='seo']" position="replace">
+                    <page name="seo" string="SEO" >
+                        <group name="default_opengraph">
+                            <field name="website_meta_title" string="Meta Title"/>
+                            <field name="website_meta_description" string="Meta Description"/>
+                            <field name="website_meta_keywords" string="Meta Keywords" help="Separate every keyword with a comma"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

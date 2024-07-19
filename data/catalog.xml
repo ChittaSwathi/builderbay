@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record forcecreate="True" id="brand_attribute" model="product.attribute">
+            <field name="name">Brand</field>
+            <field name="create_variant">always</field>
+        </record>
+        <record forcecreate="True" id="grade_attribute" model="product.attribute">
+            <field name="name">Grade</field>
+            <field name="create_variant">always</field>
+        </record>
+        <record forcecreate="True" id="block_size_attribute" model="product.attribute">
+            <field name="name">Block Size</field>
+            <field name="create_variant">always</field>
+        </record>
+        <record forcecreate="True" id="design_mix_attribute" model="product.attribute">
+            <field name="name">Design Mix</field>
+            <field name="create_variant">always</field>
+        </record>
+        <record forcecreate="True" id="gauge_attribute" model="product.attribute">
+            <field name="name">Wire Thickness</field>
+            <field name="create_variant">always</field>
+        </record>
+        <record forcecreate="True" id="pack_qty_attribute" model="product.attribute">
+            <field name="name">Quantity per pack</field>
+            <field name="create_variant">always</field>
+        </record>
+        <record forcecreate="True" id="sand_type_attribute" model="product.attribute">
+            <field name="name">Sand Type</field>
+            <field name="create_variant">always</field>
+        </record>
+        <record forcecreate="True" id="brick_size_attribute" model="product.attribute">
+            <field name="name">Brick Size</field>
+            <field name="create_variant">always</field>
+        </record>
+        <record forcecreate="True" id="colour_attribute" model="product.attribute">
+            <field name="name">Colour</field>
+            <field name="create_variant">always</field>
+        </record>
+
+        <record id="hamali_charges" model="product.product">
+            <field name="name">Hamali Charges</field>
+            <field name="default_code">BS_HAMALI</field>
+            <field name="type">service</field>
+<!--            <field name="taxes_id">[]</field>-->
+<!--            <field name="uom_id" ref="uom.product_uom_unit"/>-->
+        </record>
+         <record id="transport_charges" model="product.product">
+            <field name="name">Transport Charges</field>
+            <field name="default_code">BS_TRANSPORT</field>
+            <field name="type">service</field>
+<!--            <field name="taxes_id">[]</field>-->
+<!--            <field name="uom_id" ref="uom.product_uom_unit"/>-->
+        </record>
+		<record forcecreate="True" id="bs_percentage_config" model="ir.config_parameter">
+            <field name="key">bs_percentage</field>
+            <field name="value">10</field>
+        </record>
+    </data>
+</odoo>

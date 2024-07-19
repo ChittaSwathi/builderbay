@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!--    <t t-extend="mail.Attachment">-->
+        <t t-name="mail.AttachmentSlider"
+
+       t-inherit="mail.Attachment"
+
+       t-inherit-mode="extension"
+
+       owl="1">
+            <xpath expr="//div[hasclass('o_Attachment_actionUnlink')]" position="replace"/>
+            <!--TODO: group control - root user -->
+<!--        <t t-jquery="div.o_Attachment_actionUnlink" t-operation="replace">-->
+
+<!--            <div class="o_Attachment_action o_Attachment_actionUnlink"-->
+<!--                t-att-class="{-->
+<!--                    'o-pretty': attachment.isLinkedToComposer,-->
+<!--                }" t-on-click="_onClickUnlink" title="Remove"-->
+<!--            >-->
+<!--                <i class="fa fa-clip"/>-->
+<!--            </div>-->
+<!--        </t>-->
+    </t>
+
+</templates>

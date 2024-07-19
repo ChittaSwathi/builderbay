@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="group_account_authorize" model="res.groups">
+            <field name="name">Authorize Invoices Digitally</field>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
+
+        <!-- BS Menu display control Groups -->
+        <record model="ir.module.category" id="bs_apps_display">
+             <field name="name">Apps Display</field>
+        </record>
+
+        <record id="group_display_contacts" model="res.groups">
+            <field name="name">Contacts Menu</field>
+            <field name="comment">Display Contacts Menu for this User.</field>
+            <field name="category_id" ref="builderbay.bs_apps_display"/>
+        </record>
+
+        <record id="group_display_crm" model="res.groups">
+            <field name="name">CRM Menu</field>
+            <field name="comment">Display CRM Menu for this User.</field>
+            <field name="category_id" ref="builderbay.bs_apps_display"/>
+        </record>
+
+        <record id="group_display_sales" model="res.groups">
+            <field name="name">Sales Menu</field>
+            <field name="comment">Display Sales Menu for this User.</field>
+            <field name="category_id" ref="builderbay.bs_apps_display"/>
+        </record>
+
+        <record id="group_display_website" model="res.groups">
+            <field name="name">Website Menu</field>
+            <field name="comment">Display Website Menu for this User.</field>
+            <field name="category_id" ref="builderbay.bs_apps_display"/>
+        </record>
+
+        <record id="group_display_sign" model="res.groups">
+            <field name="name">Sign Menu</field>
+            <field name="comment">Display Sign Menu for this User.</field>
+            <field name="category_id" ref="builderbay.bs_apps_display"/>
+        </record>
+
+        <record id="group_display_purchase" model="res.groups">
+            <field name="name">Purchase Menu</field>
+            <field name="comment">Display Purchase Menu for this User.</field>
+            <field name="category_id" ref="builderbay.bs_apps_display"/>
+        </record>
+
+        <record id="group_display_helpdesk" model="res.groups">
+            <field name="name">Helpdesk Menu</field>
+            <field name="comment">Display Helpdesk for this User.</field>
+            <field name="category_id" ref="builderbay.bs_apps_display"/>
+        </record>
+
+        <record id="group_display_linktracker" model="res.groups">
+            <field name="name">Link Tracker Menu</field>
+            <field name="comment">Display Link Tracker for this User.</field>
+            <field name="category_id" ref="builderbay.bs_apps_display"/>
+        </record>
+
+        <record id="group_display_inventory" model="res.groups">
+            <field name="name">Inventory Menu</field>
+            <field name="comment">Display Inventory for this User.</field>
+            <field name="category_id" ref="builderbay.bs_apps_display"/>
+        </record>
+
+        <record id="group_display_accounting" model="res.groups">
+            <field name="name">Accounting Menu</field>
+            <field name="comment">Display Accounting for this User.</field>
+            <field name="category_id" ref="builderbay.bs_apps_display"/>
+        </record>
+
+        <record id="group_display_payroll" model="res.groups">
+            <field name="name">Payroll Menu</field>
+            <field name="comment">Display Payroll for this User.</field>
+            <field name="category_id" ref="builderbay.bs_apps_display"/>
+        </record>
+
+        <record id="group_display_employees" model="res.groups">
+            <field name="name">Employee Menu</field>
+            <field name="comment">Display Employee for this User.</field>
+            <field name="category_id" ref="builderbay.bs_apps_display"/>
+        </record>
+
+
+        <!--         SEO-->
+        <record id="group_seo" model="res.groups">
+            <field name="name">SEO User</field>
+            <field name="comment">SEO user access</field>
+            <field name="category_id" ref="base.module_category_hidden"/>
+            <field name="implied_ids" eval="[(4, ref('builderbay.group_display_website'))]"/>
+        </record>
+
+    </data>
+</odoo>

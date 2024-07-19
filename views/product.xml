@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="product_template_form" model="ir.ui.view">
+            <field name="name">product.template.form.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+
+                <!-- Specifications page -->
+                <xpath expr="//page[@name='variants']" position="after">
+                    <page name="attributes" string="Specifications">
+                        <field name="attribute_line2_ids" widget="one2many" context="{'show_attribute': False}">
+                            <tree string="Specifications" editable="bottom">
+                                <field name="attribute_id" attrs="{'readonly': [('id', '!=', False)]}"
+                                       context="{'default_create_variant':'no_variant'}" string="Specification"
+                                    domain="[('create_variant','not in',['always','dynamic'])]"/>
+                                <field name="value_ids" widget="many2many_tags" options="{'no_create_edit': True}"
+                                       context="{'default_attribute_id': attribute_id, 'show_attribute': False}"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+
+                <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='attribute_id']" position="attributes">
+                    <attribute name="domain">[('create_variant','in',['always','dynamic'])]</attribute>
+                    <attribute name="string">Variant</attribute>
+                </xpath>
+                 <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='value_ids']" position="after">
+                    <field name="is_multi_selection"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="bs_website_sale_form" model="ir.ui.view">
+            <field name="name">product.template.form.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="website_sale.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='product_template_images']" position="before">
+                    <div style="float:left;">
+                        <strong>Terms &amp; Conditions</strong>
+                    </div>
+                    <div style="float:right;margin-right:350px;">
+                        <strong>Product Description</strong>
+                    </div>
+                    <group col="4">
+                        <field name="t_and_c" nolabel="1"/>
+                        <field name="website_description" nolabel="1" />
+                    </group>
+                </xpath>
+                <xpath expr="//field[@name='website_id']" position="after">
+                    <field name="conv_uom_ids" widget="many2many_tags" domain="[('id','!=',uom_id)]"/>
+                    <field name="show_adds"/>
+                    <field name="moq"/>
+                    <field name="hot_deal_percent"/>
+                    <field name="is_best_selling"/>
+                    <field name="web_display_seq"/>
+                    <field name="is_bulk_cement"/>
+                    <field name="customer_type" attrs="{'invisible':[('is_bulk_cement','=',True)]}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Product.product view -->
+        <record id="bs_product_product_form" model="ir.ui.view">
+            <field name="name">product.product.form.inherit</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_variant_easy_edit_view"/>
+            <field name="arch" type="xml">
+                <field name="default_code" position="after">
+                    <field name="l10n_in_hsn_code"/>
+                    <field name="l10n_in_hsn_description"/>
+                    <field name="sku_reference" invisible="1"/>
+                </field>
+            </field>
+        </record>
+        <record id="bs_product_product_tree" model="ir.ui.view">
+            <field name="name">product.product.tree.inherit</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="default_code" position="after">
+                    <field name="l10n_in_hsn_code"/>
+                    <field name="sku_reference" invisible="1"/>
+                </field>
+            </field>
+        </record>
+
+
+        <!-- Product attribute -->
+         <record id="bs_attribute_form" model="ir.ui.view">
+            <field name="name">product.attribute.form.inherit</field>
+            <field name="model">product.attribute</field>
+            <field name="inherit_id" ref="product.product_attribute_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="has_unit_conversion"/>
+                    <field name="is_right_section"/>
+                    <field name="view_type" required="1" style="width:40%%"/>
+                    <field name="label1" style="width:40%%" attrs="{'invisible':[('view_type','!=','double')],'required':[('view_type','=','double')]}"/>
+                    <field name="label2" style="width:40%%" attrs="{'invisible':[('view_type','!=','double')],'required':[('view_type','=','double')]}"/>
+                </xpath>
+                <xpath expr="//field[@name='value_ids']/tree/field[@name='name']" position="after">
+                    <field name="view_type" invisible="1"/>
+                    <field name="customer_type" />
+                    <field name="split_value" attrs="{'invisible':[('view_type','!=','double')],'required':[('view_type','=','double')]}"/>
+                    <field name="sku_code" />
+                </xpath>
+            </field>
+        </record>
+
+
+        <!-- BRANDS -->
+        <record id="brands_tree" model="ir.ui.view">
+            <field name="name">brands.tree</field>
+            <field name="model">product.attribute.value</field>
+            <field name="arch" type="xml">
+                <tree string="Brands" create="0">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="hierarchy_type"/>
+                    <field name="is_top_brand"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="brands_form" model="ir.ui.view">
+            <field name="name">brands.form</field>
+            <field name="model">product.attribute.value</field>
+            <field name="arch" type="xml">
+                <form string="Brands" >
+                    <sheet>
+                        <field name="image_128" widget="image" class="oe_avatar"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="attribute_id" readonly="1" force_save="1"/>
+                            <field name="hierarchy_type" attrs="{'invisible':[('attribute_id','!=',%(builderbay.brand_attribute)d)]}"/>
+                            <field name="is_top_brand" attrs="{'invisible':[('attribute_id','!=',%(builderbay.brand_attribute)d)]}"/>
+                            <field name="brand_slug"/>
+                            <field name="position"/>
+                            <field name="category_id" widget="many2many_tags"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <record id="bs_brand_ecomm_categ_search" model="ir.ui.view">
+            <field name="name">product.public.category.brand.search</field>
+            <field name="model">product.attribute.value</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="category_id"/>
+                    <filter string="Category" name="category_id" domain="[('category_id', 'in', [])]"/>
+                    
+                </search>
+            </field>
+        </record>
+
+        <record id="brand_kanban" model="ir.ui.view">
+            <field name="name">brand.kanban</field>
+            <field name="model">product.attribute.value</field>
+            <field name="arch" type="xml">
+                <kanban string="Brands">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="image_128"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div  style="max-width:180px !important;max-height:180px !important;" class="oe_kanban_global_click">
+                                <div class="o_squared_image">
+                                    <img t-att-src="kanban_image('product.attribute.value', 'image_128', record.id.raw_value)" t-att-alt="record.name.value"/>
+                                </div>
+                                <div class="card-body p-0">
+                                    <h4 class="card-title p-2 m-0 bg-200">
+                                        <small><field name="name"/></small>
+                                    </h4>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="brand_action" model="ir.actions.act_window">
+            <field name="name">Brands</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.attribute.value</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="view_id" ref="brand_kanban"/>
+            <field name="domain" eval="[('attribute_id', '=', ref('builderbay.brand_attribute'))]"/>
+            <field name="context" eval="{'default_attribute_id': ref('builderbay.brand_attribute')}"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a new Brand here
+              </p>
+            </field>
+        </record>
+
+        <menuitem action="brand_action" id="brands_menu_id" parent="sale.menu_sale_config"/>
+
+
+        <!-- UOM Conversion -->
+        <record id="uom_conv_tree" model="ir.ui.view">
+            <field name="name">uom.conv.tree</field>
+            <field name="model">product.attribute.value</field>
+            <field name="arch" type="xml">
+                <tree string="UOM Conversions">
+                    <field name="name"/>
+                    <field name="attribute_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="uom_conv_form" model="ir.ui.view">
+            <field name="name">uom.conv.form</field>
+            <field name="model">product.attribute.value</field>
+            <field name="arch" type="xml">
+                <form string="UOM Conversion">
+                    <sheet>
+                        <field name="image_128" widget="image" class="oe_avatar"/>
+                        <div class="oe_title">
+                            <h1>
+                                <fieldconv name="name" placeholder="Name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="attribute_id" domain="[('has_unit_conversion','=',True)]"/>
+                        </group>
+                        <notebook>
+                            <page name="uom_conv" string="Conversions">
+                                <field name="uom_convrsn_ids" >
+                                    <tree editable="bottom">
+                                        <field name="from_value"/>
+                                        <field name="from_uom_id"/>
+                                        <field name="to_value"/>
+                                        <field name="to_uom_id"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="uom_conv_action" model="ir.actions.act_window">
+            <field name="name">UOM Conversions</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.attribute.value</field>
+            <field name="view_mode">tree,form</field>
+             <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('builderbay.uom_conv_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('builderbay.uom_conv_form')})]"/>
+            <field name="domain" eval="[('attribute_id.has_unit_conversion', '!=', False)]"/>
+        </record>
+
+        <menuitem action="uom_conv_action" id="uom_conv_menu_id" parent="sale.menu_sale_config"/>
+
+    </data>
+</odoo>

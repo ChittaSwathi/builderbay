@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Menu display control -->
+
+        <record id="contacts.menu_contacts" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0, [ref('builderbay.group_display_contacts')])]"/>
+        </record>
+        <record id="crm.crm_menu_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0,[ref('builderbay.group_display_crm')])]"/>
+        </record>
+        <record id="sale.sale_menu_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0, [ref('builderbay.group_display_sales')])]"/>
+        </record>
+        <record id="website.menu_website_configuration" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0,[ref('builderbay.group_display_website')])]"/>
+        </record>
+
+        <record id="sign.menu_document" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0, [ref('builderbay.group_display_sign')])]"/>
+        </record>
+        <record id="purchase.menu_purchase_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0, [ref('builderbay.group_display_purchase')])]"/>
+        </record>
+        <record id="helpdesk.menu_helpdesk_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0, [ref('builderbay.group_display_helpdesk')])]"/>
+        </record>
+        <record id="utm.menu_link_tracker_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0,[ref('builderbay.group_display_linktracker')])]"/>
+        </record>
+        <record id="stock.menu_stock_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0, [ref('builderbay.group_display_inventory')])]"/>
+        </record>
+        <record id="account_accountant.menu_accounting" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0, [ref('builderbay.group_display_accounting')])]"/>
+        </record>
+
+        <record id="hr_work_entry_contract.menu_hr_payroll_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0, [ref('builderbay.group_display_payroll')])]"/>
+        </record>
+        <record id="hr.menu_hr_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0, [ref('builderbay.group_display_employees')])]"/>
+        </record>
+
+        <!-- Account.move - inherited -->
+        <record id="bs_acct_move_tree" model="ir.ui.view">
+	        <field name='name'>account.move.tree</field>
+	        <field name="model">account.move</field>
+	        <field name="inherit_id" ref="account.view_out_invoice_tree"/>
+	        <field name="arch" type="xml">
+                <field name="invoice_partner_display_name" position="before">
+                    <field name="partner_code"/>
+                </field>
+                <field name="invoice_partner_display_name" position="after">
+                    <field name="bs_acct_no"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="bs_acct_move_form" model="ir.ui.view">
+	        <field name='name'>account.move.form</field>
+	        <field name="model">account.move</field>
+	        <field name="inherit_id" ref="account.view_move_form"/>
+	        <field name="arch" type="xml">
+                <xpath expr="//notebook/page[@name='other_info']/group/group/label" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='ref'][last()]" position="replace"/>
+<!--                <field name="ref" position="replace"/>-->
+<!--                    <attribute name="attrs">{'invisible': [('move_type','=','out_invoice')]}</attribute>-->
+<!--                </field>-->
+                <xpath expr="//header/button[last()]" position="after">
+                    <button name="action_authorize_digitally" type='object' class="oe_highlight"
+                        string='Verify' groups="builderbay.group_account_authorize"
+                        help="Verified Invoice, will allow to print Invoice with pre-set Signatory."
+                        attrs="{'invisible': [('show_authorize','!=', True)]}"/>
+                    <button name="invoice_amendend_print" type="object" string="Print Amendend Invoice"
+                            attrs="{'invisible':['|',('is_move_sent','!=',False), ('state', '!=', 'posted')]}"
+                            groups="builderbay.group_account_authorize"/>
+
+                </xpath>
+                <field name="narration" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <xpath expr="//field[@name='invoice_date']" position="after">
+                    <field name="ref_date" attrs="{'required':[('move_type','=','out_invoice'),('state','=','draft')],
+                    'invisible':[('move_type','!=','out_invoice')]}"/>
+                </xpath>
+                <xpath expr="//div[@name='journal_div']" position="after">
+<!--                    <field name="ref" attrs="{'required':[('move_type','=','out_invoice')],'invisible':[('move_type','!=','out_invoice')]}"/>-->
+
+                    <field name="show_authorize"/>
+                    <field name="authorized_by" readonly="1" attrs="{'invisible':[('authorized_by','=',False)]}"/>
+                    <field name="arn_id" readonly="1"/>
+                    <field name="eway_bill_no" />
+                    <field name="vehicle_no"/>
+                </xpath>
+                <xpath expr="//page[last()]" position="after">
+                    <page name="t_and_c" string="T&amp;C">
+                        <field name="t_and_c" required="1">
+                            <tree editable="bottom">
+                                <field name="sequence" widget="handle"/>
+                                <field name="is_selected"/>
+                                <field name="category"/>
+                                <field name="tandc_id" required="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+	        </field>
+	    </record>
+        <record id="bs_sale_move_form" model="ir.ui.view">
+	        <field name='name'>sale.account.move.form</field>
+	        <field name="model">account.move</field>
+	        <field name="inherit_id" ref="sale.account_invoice_form"/>
+	        <field name="arch" type="xml">
+                <field name="partner_shipping_id" position="attributes">
+                    <attribute name="context">{'show_address': 1}</attribute>
+                </field>
+	        </field>
+	    </record>
+
+		<record id="helpdesk_ticket_view_form_inherit_helpdesk_bank" model="ir.ui.view">
+	        <field name='name'>helpdesk.ticket.form.inherit.bank</field>
+	        <field name="model">helpdesk.ticket</field>
+	        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
+	        <field name="arch" type="xml">
+	            <field name="email_cc" position="after">
+	                <field name="partner_bank" string="Refund Bank Acc.."/>
+	            </field>
+	        </field>
+	    </record>
+        <record id="bs_ecomm_categ_search" model="ir.ui.view">
+            <field name="name">product.public.category.search</field>
+            <field name="model">product.public.category</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <filter string="Megamenu" name="active" domain="[('parent_id', '=', False)]"/>
+                    <separator/>
+                    <group expand='0' string='Group by...'>
+                        <filter string='Parent Category' name="group_by_parent_id"
+                                context="{'group_by': 'parent_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="bs_ecomm_categ_form" model="ir.ui.view">
+            <field name="name">product.public.category.form.inherit</field>
+            <field name="model">product.public.category</field>
+            <field name="inherit_id" ref="website_sale.product_public_category_form_view"/>
+            <field name="arch" type="xml">
+                <field name="sequence" position="after">
+                    <field name="allcategs_image" widget="image" attributes="{'required':[('parent_id','!=',True)]}"
+                           style="max-width:150px !important;max-height:150px !important;"/>
+                    <field name="megamenu" attributes="{'invisible':[('parent_id','!=',True)]}"/>
+                    <field name="megamenu_sequence" attributes="{'invisible':[('parent_id','!=',True)]}"/>
+                    <field name="customer_type"/>
+                    <field name="l2_view"/>
+                    <field name="category_slug"/>
+                </field>
+                <xpath expr='//div[hasclass("oe_left")]' position="after">
+                    <div class="oe_right">
+                        <group>
+                            <field name="is_coming_soon"/>
+                            <field name="is_trending"/>
+                            <field name="pdp_template_id" required="1" domian="[('type','=','qweb')]"
+                                   attrs="{'invisible':[('parent_id','=',False)]}"
+                                   options="{'no_create_edit': True}"/>
+                            <field name="categ_type_ids" widget="many2many_tags"
+                                   attrs="{'invisible':[('parent_id','!=',False)]}"/>
+                            <field name="top_brand_ids" widget="many2many_tags"  options="{'no_create': True}"/>
+                            <field name="top_vendor_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group>
+                    </div>
+                </xpath>
+                <xpath expr="//form/sheet" position="inside">
+                    <notebook>
+                        <page name="branding" string="Banners &amp; Branding">
+                            <field name="banner_ids" class="o_website_sale_image_list"
+                               mode="kanban" options="{'create_text':'Add a Media'}" nolabel="1"/>
+                        </page>
+                        <page name="specifications" string="Specifications">
+                            <field name="specification_ids" attrs="{'invisible':[('parent_id','!=',False)]}">
+                                <tree editable="bottom">
+                                    <field name="attribute_id"/>
+                                    <field name="value_ids" widget="many2many_tags"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="description" string="Products Description">
+                            <field name="products_description"/>
+                        </page>
+                        <page name="detailed_info" string="Category Information">
+                            <field name="detailed_info"/>
+                        </page>
+                    </notebook>
+                </xpath>
+            </field>
+        </record>
+
+         <record id="bs_ecomm_categ_tree" model="ir.ui.view">
+            <field name="name">product.public.category.tree.inherit</field>
+            <field name="model">product.public.category</field>
+            <field name="inherit_id" ref="website_sale.product_public_category_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="display_name" position="after">
+                    <field name="categ_type_ids" widget="many2many_tags"/>
+                </field>
+            </field>
+        </record>
+
+          <record id="bs_uom_form" model="ir.ui.view">
+            <field name="name">uom.form.inherit</field>
+            <field name="model">uom.uom</field>
+            <field name="inherit_id" ref="uom.product_uom_form_view"/>
+            <field name="arch" type="xml">
+                <field name="rounding" position="after">
+                    <field name="data_type" required="1"/>
+                </field>
+            </field>
+        </record>
+
+		<!-- Districts Start-->
+		<record id="district_tree" model="ir.ui.view">
+            <field name="name">bs.district.tree</field>
+            <field name="model">bs.district</field>
+            <field name="arch" type="xml">
+                <tree string="District" >
+                    <field name="name"/>
+                    <field name="state_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="district_form" model="ir.ui.view">
+            <field name="name">bs.district.form</field>
+            <field name="model">bs.district</field>
+            <field name="arch" type="xml">
+                <form string="District" >
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="state_id"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="state_district_action" model="ir.actions.act_window">
+            <field name="name">Districts</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">bs.district</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="district_tree"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a new District here
+              </p>
+            </field>
+        </record>
+
+        <menuitem action="state_district_action" id="state_district_id" parent="contacts.menu_localisation"/>
+		
+		<!-- District End -->
+		
+		<record id="stock_picking_bs_stages" model="ir.ui.view">
+			<field name="name">stock.picking.bs.stages</field>
+			<field name="model">stock.picking</field>
+			<field name="inherit_id" ref="stock.view_picking_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='user_id']" position="after">
+					<field name="delivery_person" />
+				</xpath>
+			</field>
+		</record>
+
+
+        <!-- BS reasons Start-->
+		<record id="bs_reason_tree" model="ir.ui.view">
+            <field name="name">bs.rejection.reason.tree</field>
+            <field name="model">bs.rejection.reason</field>
+            <field name="arch" type="xml">
+                <tree string="Reasons" >
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="bs_reason_form" model="ir.ui.view">
+            <field name="name">bs.rejection.reason.form</field>
+            <field name="model">bs.rejection.reason</field>
+            <field name="arch" type="xml">
+                <form string="Reason" >
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="bs_reasons_action" model="ir.actions.act_window">
+            <field name="name">Reasons</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">bs.rejection.reason</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="bs_reason_tree"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a new rejection reason
+              </p>
+            </field>
+        </record>
+
+        <menuitem action="bs_reasons_action" id="bs_menu_reason" parent="sale.menu_sale_config"/>
+		<!-- BS reasons end -->
+
+
+
+        <!-- Payment Acquirers Form -->
+        <record id="bs_payment_acquirer_form" model="ir.ui.view">
+			<field name="name">bs.payment.acquirer.form</field>
+			<field name="model">payment.acquirer</field>
+			<field name="inherit_id" ref="payment.acquirer_form" />
+			<field name="arch" type="xml">
+                <field name="state" position="after">
+                    <field name="is_neft"/>
+                    <field name="customer_type"/>
+                </field>
+                <field name="country_ids" position="after">
+                    <field name="prod_atom_url" attrs="{'required':[('provider','=','atom')],'invisible':[('provider','!=','atom')]}"/>
+                    <field name="test_atom_url" attrs="{'required':[('provider','=','atom')],'invisible':[('provider','!=','atom')]}"/>
+                </field>
+			</field>
+		</record>
+
+        <!-- Inherited: Payment transaction-->
+        <record id="bs_payment_transaction_form" model="ir.ui.view">
+			<field name="name">bs.payment.transaction.form</field>
+			<field name="model">payment.transaction</field>
+			<field name="inherit_id" ref="payment.transaction_form" />
+			<field name="arch" type="xml">
+                <field name="acquirer_reference" position="after">
+                    <field name="utr_no" attrs="{'invisible':[('utr_no','=',False)]}"/>
+                </field>
+            </field>
+        </record>
+
+         <!-- ARN view starts  -->
+        <record id="bs_arn_tree" model="ir.ui.view">
+            <field name="name">bs.arn.tree</field>
+            <field name="model">bs.arn</field>
+            <field name="arch" type="xml">
+                <tree string="GST Filing" >
+                    <field name="month"/>
+                    <field name="year"/>
+                    <field name="arn_no"/>
+                    <field name="filing_date"/>
+                    <field name="filed_status"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="bs_arn_form" model="ir.ui.view">
+            <field name="name">bs.arn.form</field>
+            <field name="model">bs.arn</field>
+            <field name="arch" type="xml">
+                <form string="GST Filing" >
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="month" required="1"/>
+                                <field name="year" readonly="1"/>
+                                <field name="arn_no" required="1" />
+                                <field name="filed_status"  required="1"/>
+                                <field name="filing_date"  required="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="bs_arn_action" model="ir.actions.act_window">
+            <field name="name">GST Filing</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">bs.arn</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                No GST Filing done
+              </p>
+            </field>
+        </record>
+
+        <menuitem action="bs_arn_action" id="bs_arn_id" parent="account.menu_finance_entries_management"/>
+        <!-- ARN view Ends -->
+
+
+        <!-- Pincode Serviceability starts -->
+        <record id="bs_pincode_service_tree" model="ir.ui.view">
+            <field name="name">bs.pincode.serviceability.tree</field>
+            <field name="model">bs.pincode.serviceability</field>
+            <field name="arch" type="xml">
+                <tree string="Pincode Serviceability" editable="top">
+                    <field name="pincode" required="1"/>
+                    <field name="city"/>
+                    <field name="district_id"/>
+                    <field name="state_id"/>
+                    <field name="is_serviceable" required="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="bs_pincode_service_action" model="ir.actions.act_window">
+            <field name="name">Pincode Serviceability</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">bs.pincode.serviceability</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                No records found.
+              </p>
+            </field>
+        </record>
+
+        <menuitem action="bs_pincode_service_action" id="bs_pincode_service_menu" parent="contacts.menu_localisation"/>
+        <!-- Pincode Serviceability ends -->
+
+        <!-- Terms & Conditions starts -->
+        <record id="bs_terms_conds_tree" model="ir.ui.view">
+            <field name="name">bs.terms.conditions.tree</field>
+            <field name="model">bs.terms.conditions</field>
+            <field name="arch" type="xml">
+                <tree string="Terms &amp; Conditions" >
+                    <field name="category"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+         <record id="bs_terms_conds_form" model="ir.ui.view">
+            <field name="name">bs.terms.conditions.form</field>
+            <field name="model">bs.terms.conditions</field>
+            <field name="arch" type="xml">
+                <form string="Terms &amp; Conditions">
+                    <sheet>
+                        <group>
+                            <field name="category"/>
+                            <field name="name" required="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="bs_terms_conds_action" model="ir.actions.act_window">
+            <field name="name">Terms &amp; Conditions</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">bs.terms.conditions</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                No Terms &amp; Conditions found.
+              </p>
+            </field>
+        </record>
+
+        <menuitem action="bs_terms_conds_action" id="bs_terms_conds_menu" parent="contacts.menu_localisation"/>
+        <!-- Terms & Conditions ends -->
+
+        <!-- bs partner ledger menu -->
+        <record id="bs_action_account_report_partner_ledger" model="ir.actions.client">
+            <field name="name">Partner Ledger</field>
+            <field name="tag">account_report</field>
+            <field name="context" eval="{'model': 'account.partner.ledger','ledger_type':'bs'}" />
+        </record>
+        <menuitem id="menu_action_account_report_bs_partner_ledger" name="BS Partner Ledger" action="bs_action_account_report_partner_ledger" parent="account_reports.account_reports_partners_reports_menu" groups="account.group_account_readonly"/>
+        
+        
+        <record id="shop_page" model="website.page">
+            <field name="url">/shop</field>
+            <field name="is_published">True</field>
+            <field name="view_id" ref="builderbay.bs_pdp_page2"/>
+            <field name="track">True</field>
+        </record>
+        
+        <record id="category_page" model="website.page">
+            <field name="url">/category</field>
+            <field name="is_published">True</field>
+            <field name="view_id" ref="builderbay.bs_l2_page"/>
+            <field name="track">True</field>
+        </record>
+        
+        <record id="category_page_2" model="website.page">
+            <field name="url">/category</field>
+            <field name="is_published">True</field>
+            <field name="view_id" ref="builderbay.bs_l2_tile_view"/>
+            <field name="track">True</field>
+        </record>
+        <record id="category_page_3" model="website.page">
+            <field name="url">/category</field>
+            <field name="is_published">True</field>
+            <field name="view_id" ref="builderbay.bs_ecommerce_template"/>
+            <field name="track">True</field>
+        </record>
+        
+        <record id="enquiry_page" model="website.page">
+            <field name="url">/bs/enquiry</field>
+            <field name="is_published">True</field>
+            <field name="view_id" ref="builderbay.bs_enquiry"/>
+            <field name="track">True</field>
+        </record>
+        
+        <record id="click_upload_page" model="website.page">
+            <field name="url">/upload/enquiry</field>
+            <field name="is_published">True</field>
+            <field name="view_id" ref="builderbay.bs_click_upload"/>
+            <field name="track">True</field>
+        </record>
+        <menuitem id="website.menu_visitor_sub_menu" name="Visitors"
+            sequence="1"
+            parent="website.website_visitor_menu"
+            action="website.website_visitors_action"
+            groups="sales_team.group_sale_salesman"
+        />
+        <menuitem id="website_sale.menu_catalog_categories"
+            action="website_sale.product_public_category_action"
+            parent="website_sale.menu_product_settings" sequence="1"
+            groups="sales_team.group_sale_salesman"/>
+            
+        <menuitem id="menu_email_sms_template" 
+       			name="Template" 
+       			parent="base.menu_administration" 
+       			sequence="2" groups="base.group_no_one"/>
+       			
+       			<menuitem id="bs_menu_email_templates" parent="menu_email_sms_template" action="mail.action_email_template_tree_all"
+                  sequence="10"/>
+                 <menuitem id="bs_sms_template_menu"
+					        name="SMS Templates"
+					        parent="menu_email_sms_template"
+					        sequence="12"
+					        action="sms.sms_template_action"/>
+       			
+    </data>
+</odoo>

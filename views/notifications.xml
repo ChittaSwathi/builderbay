@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="bs_notifications_form" model="ir.ui.view">
+        <field name="name">bs.notification.form</field>
+        <field name="model">bs.notification</field>
+        <field name="arch" type="xml">
+            <form string="Notification" edit="false" create="false" delete="false">
+                <sheet>
+                    <group col="4">
+                        <field name="name"/>
+                        <field name="partner_id"/>
+                        <field name="type"/>
+                        <field name="read"/>
+                        <field name="read_time"/>
+                    </group>
+                    <group>
+                        <field name="url"/>
+                        <field name="content"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="bs_notifications_tree" model="ir.ui.view">
+        <field name="name">bs.notification.tree</field>
+        <field name="model">bs.notification</field>
+        <field name="arch" type="xml">
+            <tree string="Notifications" edit="false" create="false" delete="false">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="type"/>
+                <field name="read"/>
+                <field name="read_time"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="bs_notifications_action" model="ir.actions.act_window">
+        <field name="name">BS Notifications</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">bs.notification</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="bs_notifications_tree"/>
+    </record>
+
+    <menuitem action="bs_notifications_action" id="bs_notifications_menu_id" parent="base.menu_email"/>
+
+
+</odoo>

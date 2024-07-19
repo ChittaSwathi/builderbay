@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+         <record id="bs_sale_order_tree" model="ir.ui.view">
+             <field name="name">bs.sale.order.tree.inherit</field>
+             <field name="model">sale.order</field>
+             <field name="inherit_id" ref="sale.view_order_tree"/>
+             <field name="arch" type="xml">
+                 <field name="partner_id" position="before">
+                     <field name="partner_code"/>
+                 </field>
+                  <field name="partner_id" position="after">
+                     <field name="bs_acct_no"/>
+                 </field>
+             </field>
+         </record>
+
+        <record id="bs_sale_order_form" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_draft']" position="replace">
+                    <button name="action_draft" states="cancel,reject" type="object" string="Set to Quotation"/>
+                </xpath>
+
+                <xpath expr="//button[@name='%(sale.action_view_sale_advance_payment_inv)d']" position="replace">
+                    <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice"
+                            type="action" class="btn-primary"
+                            attrs="{'invisible': [('invoice_status', '!=', 'to invoice')]}"/>
+	                <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice"
+                        type="action" context="{'default_advance_payment_method': 'percentage'}"
+                        attrs="{'invisible': ['|',('invoice_status', '!=', 'no'),
+                        ('state', 'in', ['sale','done'])]}"/>
+                </xpath>
+               <!-- <xpath expr="//button[@name='action_cancel']" position="attributes">
+                    <attribute name="invisible"> ['|', ('state', 'not in', ['draft', 'sent','sale','accept']), ('id', '=', False)]</attribute>
+                </xpath>-->
+                <field name="payment_term_id" position="after">
+                    <field name="click_upload_id" domain="['|',('partner_id','=',False),('partner_id','=',partner_id)]"/>
+                    <field name="price_enq_id" domain="['|',('partner_id','=',False),('partner_id','=',partner_id)]"/>
+                </field>
+                <field name="partner_shipping_id" position="attributes">
+                    <attribute name="context">{'default_type':'delivery', 'show_address': 1}</attribute>
+                </field>
+<!--                <xpath expr="//form/header" position="inside">-->
+<!--                    &lt;!&ndash;<button name="raise_rfqs" string="Raise RFQ" type="object"/>&ndash;&gt;-->
+<!--                    <button name="unprocess_so" string="Reset to Accepted" type="object"-->
+<!--                        attrs="{'invisible':[('state','!=','process')]}"/>-->
+<!--                </xpath>-->
+                <xpath expr="//form/sheet/div[@name='button_box']" position="inside">
+                   <button name="action_view_rfq" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('rfq_count', '=', 0)]}">
+                       <field name="rfq_count" widget="statinfo" string="RFQs"/>
+                   </button>
+                </xpath>
+                <field name="note" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <xpath expr="//notebook/page[last()]" position="after">
+                    <page string="T&amp;C" name="t_and_c">
+                        <field name="t_and_c" required="1">
+                            <tree editable="bottom">
+                                <field name="sequence" widget="handle"/>
+                                <field name="is_selected"/>
+                                <field name="category"/>
+                                <field name="tandc_id" required="1"/>
+                            </tree>
+                        </field>
+                        <field name="note" placeholder="Terms and conditions.."/>
+                    </page>
+                    <page name="bulk_enq" string="Bulk Enquiry" attrs="{'invisible':[('is_bulk_enq','!=',True)]}">-->
+                        <field name="is_bulk_enq" invisible="1"/>
+                        <group>
+                            <field name="enq_project_type"/>
+                            <field name="enq_total_req"/>
+                            <field name="enq_monthly_req" />
+                            <field name="enq_current_req" />
+                            <field name="enq_approved_brands"/>
+                            <field name="enq_contact_name"/>
+                            <field name="enq_contact_phone"/>
+                            <field name="enq_contact_email"/>
+                            <field name="enq_del_address"/>
+                            <field name="enq_landmark"/>
+                            <field name="enq_city"/>
+                            <field name="enq_district_id"/>
+                            <field name="enq_state_id"/>
+                            <field name="enq_pincode"/>
+                            <field name="enq_gstin"/>
+                            <field name="enq_gst_attachment"/>
+                            <field name="enq_reg_address"/>
+                        </group>
+                    </page>
+                </xpath>
+                <field name="client_order_ref" position="after">
+                    <field name="client_ref_date"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

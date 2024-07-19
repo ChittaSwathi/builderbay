@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="rfq_tree_view" model="ir.ui.view">
+        <field name="name">bs.rfq.tree</field>
+        <field name="model">bs.rfq</field>
+        <field name="arch" type="xml">
+            <tree string="RFQs">
+                <field name="name"/>
+                <field name="vendor_id"/>
+                <field name="partner_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="rfq_form_view" model="ir.ui.view">
+        <field name="name">bs.rfq.form</field>
+        <field name="model">bs.rfq</field>
+        <field name="arch" type="xml">
+            <form string="RFQs">
+                <header>
+                     <button name="accept_rfq" string="Accept" type="object"
+                    attrs="{'invisible':[('state','not in',['draft'])]}"/>
+                    <button name="cancel_rfq" string="Cancel" type="object"
+                    attrs="{'invisible':[('state','in',['draft','cancel','reject'])]}"/>
+                    <button name="reject_rfq" string="Reject" type="object"
+                    attrs="{'invisible':[('state','in',['draft','reject','cancel'])]}"/>
+                    <button name="confirm_rfq" string="Validate" type="object"
+                    attrs="{'invisible':[('state','not in',['accept'])]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,accept,confirm"/>
+                </header>
+                <sheet>
+                <div class="oe_title">
+                    <h1>
+                        <field name="name" readonly="1"/>
+                    </h1>
+                </div>
+                <group>
+                    <group>
+                        <field name="vendor_id" widget="res_partner_many2one" context="{'res_partner_search_mode': 'supplier', 'show_vat': True}" placeholder="Name, TIN, Email, or Reference"/>
+                        <field name="currency_id" groups="base.group_multi_currency" force_save="1"/>
+						<field name="date_order" />
+                    </group>
+                    <group>
+                        <field name="origin" attrs="{'invisible': [('origin','=',False)]}"/>
+                        <field name="partner_id" readonly="1" force_save="1"/>
+                        <field name="company_id" invisible="1"/>
+                    </group>
+                </group>
+                <notebook>
+                    <page string="Products">
+                        <field name="order_line" widget="section_and_note_one2many" mode="tree" attrs="{'readonly': [('state', 'in', ('confirm','reject', 'cancel'))]}">
+                            <tree string="RFQ Lines" editable="bottom">
+                                <field name="sequence" widget="handle"/>
+                                <field name="product_id"/>
+                                <field name="name" widget="section_and_note_text"/>
+                                <field name="product_qty"/>
+                                <field name="product_uom" string="UoM" groups="uom.group_uom"  force_save="1" optional="show"/>
+                                <field name="price_unit"/>
+                                <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','purchase'), ('company_id', '=', parent.company_id)]" context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}" options="{'no_create': True}" optional="show"/>
+                                <field name="price_subtotal" widget="monetary"/>
+                                <field name="company_id" invisible="1"/>
+                            </tree>
+                        </field>
+                        <group class="oe_subtotal_footer oe_right">
+                            <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="amount_tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+							<field name="amount_bs_tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <div class="oe_subtotal_footer_separator oe_inline">
+                                <label for="amount_total"/>
+                            </div>
+                            <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                        <field name="notes" class="oe_inline" placeholder="Define your terms and conditions ..."/>
+                        <div class="oe_clear"/>
+                    </page>
+                </notebook>
+            </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="rfq_action" model="ir.actions.act_window">
+        <field name="name">RFQs</field>
+        <field name="res_model">bs.rfq</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="main_menu_rfq" name="RFQs"
+            parent="purchase.menu_purchase_root" sequence="1" />
+
+    <menuitem
+        id="submenu_rfq"
+        action="rfq_action"
+        parent="main_menu_rfq"
+        sequence="1"/>
+
+	<!-- ############ BS Percentage Configuration begins-->
+	<!-- <record id="res_config_settings_view_form_bs" model="ir.ui.view">
+		<field name="name">res.config.settings.view.form.inherit.bs</field>
+		<field name="model">res.config.settings</field>
+		<field name="priority" eval="40"/>
+		<field name="inherit_id" ref="base.res_config_settings_view_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//div[@data-key='sale_management']" position="inside">
+				<h2 class="mt32">BS Percentage</h2>
+				<div class="row mt16 o_settings_container">
+					<div class="col-12 col-lg-6 o_setting_box">
+						<div class="o_setting_left_pane"></div>
+						<div class="o_setting_right_pane">
+							<label class="o_form_label" for="bs_percentage" data-original-title="" title="">Percentage</label>
+							<field name="bs_percentage" />
+						</div>
+					</div>
+				</div>
+			</xpath>
+		</field>
+	</record>-->
+	<!-- ############ BS Percentage Configuration ends -->
+</odoo>

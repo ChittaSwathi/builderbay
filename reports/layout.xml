@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	 <template id="bs_external_layout_clean">
+        <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style">
+            <div class="o_clean_header">
+                <div class="row">
+                    <div class="col-5">
+                        <img src="/builderbay/static/src/images/BSLogoDark.png" alt="" title="" class="img-fluid"/>
+                        <ul class="list-unstyled" style="text-align: left;">
+                            <t t-if="report_model">
+                                <li style="font-size: 22px;color: #48c0bc;font-weight: bold;">
+                                    <t t-esc="report_model"/>
+                                </li>
+                            </t>
+                            <t t-if="'Tax Invoice' in report_model">
+                                <li style="font-size:12px">(Under Rule 48 of CGST Rules,2017)</li>
+                            </t>
+                        </ul>
+                    </div>
+                    <div class="col-7" style="font-size:15px;">
+                        <t t-call="builderbay.bs_partner_address">
+                            <t t-set="company" t-value="company"/>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div t-attf-class="article o_report_layout_standard o_company_#{company.id}_layout"  t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <div class="pt-2">
+                <!-- This div ensures that the address is not cropped by the header. -->
+                <t t-call="web.address_layout"/>
+            </div>
+            <t t-raw="0"/>
+        </div>
+
+        <div t-attf-class="footer o_standard_footer o_company_#{company.id}_layout" >
+            <div class="text-center" style="font-size:12px;">
+                <ul class="list-inline">
+                    <li t-if="company.phone" class="list-inline-item d-inline"><span t-field="company.phone"/></li>|
+                    <li t-if="company.email" class="list-inline-item d-inline"><span t-field="company.email"/></li>|
+                    <li t-if="company.website" class="list-inline-item d-inline"><span t-field="company.website"/></li>|
+                    <li t-if="company.vat" class="list-inline-item d-inline"><t t-esc="company.country_id.vat_label or 'Tax ID'"/>: <span t-field="company.vat"/></li>
+                </ul>
+
+                <div name="financial_infos">
+                    <span t-field="company.report_footer"/>
+                </div>
+
+                <div t-if="report_type == 'pdf'" class="text-muted">
+                  <ul class="list-inline">
+                    <li t-if="company.phone" class="text-left list-inline-item d-inline">Page: <span class="page"/> of <span class="topage"/></li>|
+                    <li style="padding-left:20px;padding-right:20px" t-if="company.phone" class="list-inline-item d-inline">This is a computer generated Tax Invoice and electronically signed.</li>|
+                    <li t-if="company.phone" class="text-right list-inline-item d-inline"><t t-esc="o.name"/></li>
+                  </ul>
+                </div>
+
+            </div>
+        </div>
+    </template>
+	
+	<template id="bs_external_layout">
+        <t t-if="not o" t-set="o" t-value="doc"/>
+
+        <t t-if="not company">
+            <!-- Multicompany -->
+            <t t-if="company_id">
+                <t t-set="company" t-value="company_id"/>
+            </t>
+            <t t-elif="o and 'company_id' in o">
+                <t t-set="company" t-value="o.company_id.sudo()"/>
+            </t>
+            <t t-else="else">
+                <t t-set="company" t-value="res_company"/>
+            </t>
+        </t>
+        <t t-call="builderbay.bs_external_layout_clean">
+            <t t-raw="0"/>
+<!--            <t t-set="doc" t-value="o or doc"/>-->
+            <t t-set="report_model" t-value="report_model"/>
+        </t>
+
+
+    </template>
+    
+</odoo>

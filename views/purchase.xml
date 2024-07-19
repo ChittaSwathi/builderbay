@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <!-- purchase order: inherited -->
+         <record id="bs_po_form" model="ir.ui.view">
+	        <field name='name'>purchase.order.form</field>
+	        <field name="model">purchase.order</field>
+	        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <field name="partner_ref" position="after">
+                    <field name="delivery_address" attrs="{'required':[('origin','!=','')]}"/>
+                </field>
+                <field name="notes" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <xpath expr="//page[@name='purchase_delivery_invoice']" position="after">
+                    <page name="t_and_c" string="T&amp;C">
+                        <field name="t_and_c" required="1">
+                            <tree editable="bottom">
+                                <field name="sequence" widget="handle"/>
+                                <field name="is_selected"/>
+                                <field name="category"/>
+                                <field name="tandc_id" required="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+         </record>
+
+	<record id="purchase_rfq_vendor" model="ir.actions.act_window">
+         <field name="name">Requests for Quotation</field>
+         <field name="type">ir.actions.act_window</field>
+         <field name="res_model">purchase.order</field>
+         <field name="view_mode">tree,kanban,form,pivot,graph,calendar,activity</field>
+         <field name="view_id" ref="purchase.purchase_order_tree"/>
+         <field name="domain">[]</field>
+         <field name="context">{}</field>
+         <field name="search_view_id" ref="purchase.view_purchase_order_filter"/>
+
+    </record>
+    <record id="purchase_cancel_vendor" model="ir.actions.act_window">
+         <field name="name">Requests for Quotation</field>
+         <field name="type">ir.actions.act_window</field>
+         <field name="res_model">purchase.order</field>
+         <field name="view_mode">tree,kanban,form,pivot,graph,calendar,activity</field>
+         <field name="view_id" ref="purchase.purchase_order_tree"/>
+         <field name="domain">[]</field>
+         <field name="context">{}</field>
+         <field name="search_view_id" ref="purchase.view_purchase_order_filter"/>
+
+    </record>
+    <record id="purchase_confirm_vendor" model="ir.actions.act_window">
+         <field name="name">Requests for Quotation</field>
+         <field name="type">ir.actions.act_window</field>
+         <field name="res_model">purchase.order</field>
+         <field name="view_mode">tree,kanban,form,pivot,graph,calendar,activity</field>
+         <field name="view_id" ref="purchase.purchase_order_tree"/>
+         <field name="domain">[]</field>
+         <field name="context">{}</field>
+         <field name="search_view_id" ref="purchase.view_purchase_order_filter"/>
+
+    </record>
+</odoo>

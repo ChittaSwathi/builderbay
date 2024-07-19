@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- inherited - For partner ledger customer name -->
+    <template id="bs_line_template" inherit_id="account_reports.line_template">
+        <xpath expr="//span[hasclass('account_report_line_name')]/t" position="replace">
+            <t t-if="not line.get('action_id')" t-esc="line.get('name')[:18]"/>
+        </xpath>
+    </template>
+</odoo>
